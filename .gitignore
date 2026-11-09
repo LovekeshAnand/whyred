@@ -1,0 +1,4 @@
+/whyred
+/whyred.exe
+*.whyred
+testdata/fuzz/

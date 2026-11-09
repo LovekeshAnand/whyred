@@ -1,0 +1,77 @@
+-test.shuffle 1794255425224674600
+=== RUN   TestRepeatsCollapseAndSuppress
+    whyred_test.go:268: flagged lines:
+         got: ["new:boom at 0xdeadbeef1" "new:scattered failure" "new:scattered failure"]
+        want: ["new:boom at 0xdeadbeef1" "new:scattered failure" "new:scattered failure" "new:scattered failure"]
+--- FAIL: TestRepeatsCollapseAndSuppress (0.00s)
+=== RUN   TestSameShapeSameHash
+--- PASS: TestSameShapeSameHash (0.00s)
+=== RUN   TestTemplateShapes
+--- PASS: TestTemplateShapes (0.00s)
+=== RUN   TestAwkwardInput
+=== RUN   TestAwkwardInput/blank_lines
+=== RUN   TestAwkwardInput/nul_bytes
+=== RUN   TestAwkwardInput/invalid_utf8
+=== RUN   TestAwkwardInput/long_line
+=== RUN   TestAwkwardInput/long_no_newline
+=== RUN   TestAwkwardInput/only_punctuation
+=== RUN   TestAwkwardInput/many_tokens
+=== RUN   TestAwkwardInput/empty
+=== RUN   TestAwkwardInput/no_newline
+=== RUN   TestAwkwardInput/crlf
+--- PASS: TestAwkwardInput (0.09s)
+    --- PASS: TestAwkwardInput/blank_lines (0.00s)
+    --- PASS: TestAwkwardInput/nul_bytes (0.00s)
+    --- PASS: TestAwkwardInput/invalid_utf8 (0.00s)
+    --- PASS: TestAwkwardInput/long_line (0.03s)
+    --- PASS: TestAwkwardInput/long_no_newline (0.03s)
+    --- PASS: TestAwkwardInput/only_punctuation (0.00s)
+    --- PASS: TestAwkwardInput/many_tokens (0.00s)
+    --- PASS: TestAwkwardInput/empty (0.00s)
+    --- PASS: TestAwkwardInput/no_newline (0.00s)
+    --- PASS: TestAwkwardInput/crlf (0.00s)
+=== RUN   TestWildcardsLearnedFromDisagreement
+--- PASS: TestWildcardsLearnedFromDisagreement (0.00s)
+=== RUN   TestIdenticalRunIsClean
+--- PASS: TestIdenticalRunIsClean (0.00s)
+=== RUN   TestNewChangedMissing
+--- PASS: TestNewChangedMissing (0.00s)
+=== RUN   TestOrderOfParallelOutputIsIgnored
+--- PASS: TestOrderOfParallelOutputIsIgnored (0.00s)
+=== RUN   TestGzipAndUTF16Inputs
+--- PASS: TestGzipAndUTF16Inputs (0.01s)
+=== RUN   TestGeneratedIdPositionsAcceptAnyId
+--- PASS: TestGeneratedIdPositionsAcceptAnyId (0.00s)
+=== RUN   TestHTMLCannotBeBrokenOutOf
+--- PASS: TestHTMLCannotBeBrokenOutOf (0.00s)
+=== RUN   TestCorruptModelsAreRejected
+--- PASS: TestCorruptModelsAreRejected (0.01s)
+=== RUN   TestVolatilityIsLearnedFromDisagreement
+--- PASS: TestVolatilityIsLearnedFromDisagreement (0.00s)
+=== RUN   TestReportIsBounded
+--- PASS: TestReportIsBounded (1.10s)
+=== RUN   TestFreeTextTailsAreLearned
+--- PASS: TestFreeTextTailsAreLearned (0.00s)
+=== RUN   TestCLI
+--- PASS: TestCLI (0.03s)
+=== RUN   TestSpike
+--- PASS: TestSpike (0.00s)
+=== RUN   TestContextAndBlockMerging
+--- PASS: TestContextAndBlockMerging (0.00s)
+=== RUN   TestManyBaselinesInParallel
+--- PASS: TestManyBaselinesInParallel (0.04s)
+=== RUN   TestControlCharactersNeverReachTheTerminal
+--- PASS: TestControlCharactersNeverReachTheTerminal (0.00s)
+=== RUN   TestModelRoundTrip
+--- PASS: TestModelRoundTrip (0.02s)
+=== RUN   FuzzAnalyze
+=== RUN   FuzzAnalyze/seed#0
+=== RUN   FuzzAnalyze/seed#1
+=== RUN   FuzzAnalyze/seed#2
+--- PASS: FuzzAnalyze (0.00s)
+    --- PASS: FuzzAnalyze/seed#0 (0.00s)
+    --- PASS: FuzzAnalyze/seed#1 (0.00s)
+    --- PASS: FuzzAnalyze/seed#2 (0.00s)
+FAIL
+FAIL	whyred	2.365s
+FAIL

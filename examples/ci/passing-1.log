@@ -1,0 +1,285 @@
+2026-11-03T17:03:00.3250000Z Current runner version: '2.319.1'
+2026-11-03T17:03:00.4910000Z Runner name: 'GitHub Actions 25'
+2026-11-03T17:03:00.8550000Z ##[group]Operating System
+2026-11-03T17:03:01.1070000Z Ubuntu 24.04.1 LTS
+2026-11-03T17:03:01.2600000Z ##[endgroup]
+2026-11-03T17:03:01.3820000Z Download action repository 'actions/checkout@v4' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-03T17:03:01.6750000Z ##[group]Run actions/checkout@v4
+2026-11-03T17:03:01.9020000Z Syncing repository: acme/storefront
+2026-11-03T17:03:01.9170000Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --depth=1 origin +a93760e496111449f688a82589223e550bcfb24f:refs/remotes/origin/main
+2026-11-03T17:03:02.2940000Z remote: Total 910 (delta 1), reused 445 (delta 8), pack-reused 0
+2026-11-03T17:03:02.4130000Z HEAD is now at a93760e fix typo in readme
+2026-11-03T17:03:02.7970000Z ##[endgroup]
+2026-11-03T17:03:02.9120000Z ##[group]Run actions/setup-node@v4
+2026-11-03T17:03:03.2810000Z Found in cache @ /opt/hostedtoolcache/node/20.11.0/x64
+2026-11-03T17:03:03.3010000Z Cache restored from key: node-cache-Linux-x64-npm-94f896f9f4fbcd023312bc6009f1f555beacce9d3c03644b1e272a53889e1e49
+2026-11-03T17:03:03.6910000Z ##[endgroup]
+2026-11-03T17:03:04.0030000Z ##[group]Run npm ci
+2026-11-03T17:03:04.2210000Z (node:1548) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-03T17:03:04.5560000Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it.
+2026-11-03T17:03:04.6650000Z npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+2026-11-03T17:03:05.0620000Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+2026-11-03T17:03:05.2790000Z + lodash@0.4.11
+2026-11-03T17:03:05.4020000Z + axios@5.5.27
+2026-11-03T17:03:05.5600000Z + express@7.18.5
+2026-11-03T17:03:05.8360000Z + zod@2.2.27
+2026-11-03T17:03:05.9930000Z + dayjs@3.16.10
+2026-11-03T17:03:06.3580000Z + uuid@4.19.1
+2026-11-03T17:03:06.4920000Z + chalk@4.18.8
+2026-11-03T17:03:06.8470000Z + debug@8.1.5
+2026-11-03T17:03:07.0210000Z + ws@3.16.1
+2026-11-03T17:03:07.2480000Z + pino@8.9.17
+2026-11-03T17:03:07.6420000Z + yargs@5.7.22
+2026-11-03T17:03:07.7730000Z + glob@0.11.23
+2026-11-03T17:03:08.1250000Z + semver@0.7.15
+2026-11-03T17:03:08.3830000Z + minimist@1.12.28
+2026-11-03T17:03:08.6000000Z + qs@8.19.23
+2026-11-03T17:03:08.8600000Z + ms@5.13.25
+2026-11-03T17:03:08.9090000Z + nanoid@1.16.23
+2026-11-03T17:03:09.0120000Z + undici@2.9.8
+2026-11-03T17:03:09.1890000Z + fastify@6.19.3
+2026-11-03T17:03:09.4970000Z + knex@0.4.23
+2026-11-03T17:03:09.6660000Z + pg@2.12.27
+2026-11-03T17:03:09.9840000Z + redis@5.5.7
+2026-11-03T17:03:10.1200000Z + bullmq@0.14.21
+2026-11-03T17:03:10.2710000Z + sharp@4.12.26
+2026-11-03T17:03:10.5370000Z + jose@3.18.20
+2026-11-03T17:03:10.7570000Z + bcrypt@1.2.11
+2026-11-03T17:03:10.8890000Z + helmet@0.14.23
+2026-11-03T17:03:11.1270000Z + cors@5.17.13
+2026-11-03T17:03:11.4550000Z + dotenv@4.12.16
+2026-11-03T17:03:11.6130000Z + commander@0.11.7
+2026-11-03T17:03:11.8170000Z + ora@1.17.20
+2026-11-03T17:03:11.9970000Z + execa@2.3.9
+2026-11-03T17:03:12.2990000Z + tslib@8.11.24
+2026-11-03T17:03:12.6500000Z + rxjs@0.8.8
+2026-11-03T17:03:12.7340000Z + immer@6.12.26
+2026-11-03T17:03:12.8750000Z + date-fns@0.14.20
+2026-11-03T17:03:13.1460000Z + ramda@3.15.19
+2026-11-03T17:03:13.2330000Z + cheerio@8.15.15
+2026-11-03T17:03:13.6140000Z + marked@7.11.6
+2026-11-03T17:03:13.6280000Z + mime@7.2.7
+2026-11-03T17:03:13.8070000Z added 1423 packages, and audited 1424 packages in 12s
+2026-11-03T17:03:13.9930000Z 187 packages are looking for funding
+2026-11-03T17:03:14.1380000Z found 0 vulnerabilities
+2026-11-03T17:03:14.2200000Z ##[endgroup]
+2026-11-03T17:03:14.5070000Z ##[group]Run npm run build
+2026-11-03T17:03:14.6600000Z > storefront@2.8.0 build
+2026-11-03T17:03:14.7400000Z > tsc --noEmit && vite build
+2026-11-03T17:03:14.9610000Z vite v5.4.10 building for production...
+2026-11-03T17:03:15.1870000Z transforming...
+2026-11-03T17:03:15.4160000Z ✓ 1342 modules transformed.
+2026-11-03T17:03:15.5300000Z rendering chunks...
+2026-11-03T17:03:15.6220000Z computing gzip size...
+2026-11-03T17:03:15.9220000Z dist/index.html                   0.47 kB │ gzip:  0.30 kB
+2026-11-03T17:03:16.3010000Z dist/assets/index-gXbsyJvw.js   311.55 kB │ gzip: 63.23 kB
+2026-11-03T17:03:16.5520000Z dist/assets/vendor-HWdqO7dd.js   384.03 kB │ gzip: 52.59 kB
+2026-11-03T17:03:16.7610000Z dist/assets/checkout-f9daFRIx.js   191.58 kB │ gzip: 83.97 kB
+2026-11-03T17:03:17.1450000Z dist/assets/admin-zVa6oAwm.js   332.41 kB │ gzip: 43.74 kB
+2026-11-03T17:03:17.4940000Z ✓ built in 6.98s
+2026-11-03T17:03:17.8380000Z ##[endgroup]
+2026-11-03T17:03:17.8710000Z ##[group]Run npm test -- --ci
+2026-11-03T17:03:18.1710000Z > storefront@2.8.0 test
+2026-11-03T17:03:18.4930000Z > jest --ci
+2026-11-03T17:03:18.8130000Z PASS src/queue/repository.test.ts (3.504 s)
+2026-11-03T17:03:19.1760000Z   ✓ caches empty input (27 ms)
+2026-11-03T17:03:19.4430000Z   ✓ parses unicode names (25 ms)
+2026-11-03T17:03:19.8030000Z   ✓ ignores invalid json (61 ms)
+2026-11-03T17:03:19.9080000Z   ✓ caches concurrent writes (77 ms)
+2026-11-03T17:03:20.0420000Z   ✓ caches concurrent writes (16 ms)
+2026-11-03T17:03:20.1220000Z   ✓ emits timeouts gracefully (63 ms)
+2026-11-03T17:03:20.3350000Z   ✓ emits large payloads (4 ms)
+2026-11-03T17:03:20.7210000Z   ✓ retries trailing slashes (74 ms)
+2026-11-03T17:03:20.8760000Z   ✓ rejects unicode names (13 ms)
+2026-11-03T17:03:21.0970000Z   ✓ validates a stale cache (43 ms)
+2026-11-03T17:03:21.4680000Z   ✓ rejects expired tokens (26 ms)
+2026-11-03T17:03:21.5320000Z   ✓ validates unicode names (80 ms)
+2026-11-03T17:03:21.8150000Z [server] listening on port 30823
+2026-11-03T17:03:21.8380000Z [http] request id=6b384165-b933-49a6-a811-0e7d2c6efdfc took 30ms status=200
+2026-11-03T17:03:21.9260000Z PASS src/orders/mapper.test.ts (0.182 s)
+2026-11-03T17:03:21.9680000Z   ✓ rounds error responses (20 ms)
+2026-11-03T17:03:22.2080000Z   ✓ retries duplicate ids (73 ms)
+2026-11-03T17:03:22.5050000Z   ✓ returns negative totals (30 ms)
+2026-11-03T17:03:22.8200000Z   ✓ normalises a stale cache (32 ms)
+2026-11-03T17:03:22.9240000Z   ✓ retries error responses (10 ms)
+2026-11-03T17:03:23.3230000Z   ✓ caches invalid json (35 ms)
+2026-11-03T17:03:23.5310000Z   ✓ returns error responses (2 ms)
+2026-11-03T17:03:23.5800000Z   ✓ validates duplicate ids (14 ms)
+2026-11-03T17:03:23.8080000Z   ✓ normalises expired tokens (78 ms)
+2026-11-03T17:03:24.0440000Z   ✓ rejects expired tokens (79 ms)
+2026-11-03T17:03:24.2660000Z   ✓ emits duplicate ids (29 ms)
+2026-11-03T17:03:24.5250000Z [http] Error: upstream timeout (expected by test) id=d6700871-15e2-433b-a95f-f21df02e9607
+2026-11-03T17:03:24.5800000Z PASS src/audit/validator.test.ts (0.603 s)
+2026-11-03T17:03:24.6420000Z   ✓ emits duplicate ids (73 ms)
+2026-11-03T17:03:24.9000000Z   ✓ renders invalid json (37 ms)
+2026-11-03T17:03:25.0940000Z   ✓ returns invalid json (71 ms)
+2026-11-03T17:03:25.2880000Z   ✓ emits a stale cache (40 ms)
+2026-11-03T17:03:25.5610000Z   ✓ validates missing fields (53 ms)
+2026-11-03T17:03:25.9020000Z   ✓ parses a stale cache (58 ms)
+2026-11-03T17:03:25.9920000Z   ✓ handles missing fields (54 ms)
+2026-11-03T17:03:26.1820000Z   ✓ ignores trailing slashes (19 ms)
+2026-11-03T17:03:26.2660000Z [server] listening on port 37157
+2026-11-03T17:03:26.4550000Z PASS src/notify/validator.test.ts (2.803 s)
+2026-11-03T17:03:26.6550000Z   ✓ caches missing fields (17 ms)
+2026-11-03T17:03:26.6930000Z   ✓ ignores concurrent writes (46 ms)
+2026-11-03T17:03:26.7740000Z   ✓ validates invalid json (72 ms)
+2026-11-03T17:03:27.1210000Z   ✓ parses a stale cache (79 ms)
+2026-11-03T17:03:27.2040000Z   ✓ returns large payloads (64 ms)
+2026-11-03T17:03:27.3350000Z   ✓ caches partial failures (38 ms)
+2026-11-03T17:03:27.4430000Z [server] listening on port 37961
+2026-11-03T17:03:27.6190000Z [http] request id=95e7859c-4c3c-47e9-a936-34b2932140a0 took 8ms status=200
+2026-11-03T17:03:27.6270000Z PASS src/checkout/client.test.ts (0.108 s)
+2026-11-03T17:03:27.6490000Z   ✓ ignores unicode names (52 ms)
+2026-11-03T17:03:27.7750000Z   ✓ returns timeouts gracefully (6 ms)
+2026-11-03T17:03:27.9250000Z   ✓ renders timeouts gracefully (13 ms)
+2026-11-03T17:03:27.9320000Z   ✓ caches negative totals (30 ms)
+2026-11-03T17:03:28.2360000Z   ✓ renders partial failures (6 ms)
+2026-11-03T17:03:28.4740000Z   ✓ retries timeouts gracefully (24 ms)
+2026-11-03T17:03:28.5820000Z [server] listening on port 52160
+2026-11-03T17:03:28.8690000Z PASS src/ratelimit/controller.test.ts (0.737 s)
+2026-11-03T17:03:29.1870000Z   ✓ renders missing fields (15 ms)
+2026-11-03T17:03:29.4430000Z   ✓ normalises missing fields (10 ms)
+2026-11-03T17:03:29.6470000Z   ✓ parses negative totals (68 ms)
+2026-11-03T17:03:29.9140000Z   ✓ validates timeouts gracefully (53 ms)
+2026-11-03T17:03:30.2480000Z   ✓ retries duplicate ids (34 ms)
+2026-11-03T17:03:30.5580000Z   ✓ normalises empty input (75 ms)
+2026-11-03T17:03:30.6200000Z PASS src/inventory/service.test.ts (2.512 s)
+2026-11-03T17:03:30.9030000Z   ✓ returns empty input (18 ms)
+2026-11-03T17:03:30.9160000Z   ✓ ignores expired tokens (16 ms)
+2026-11-03T17:03:31.0850000Z   ✓ emits large payloads (2 ms)
+2026-11-03T17:03:31.3190000Z   ✓ renders empty input (21 ms)
+2026-11-03T17:03:31.4180000Z   ✓ ignores trailing slashes (19 ms)
+2026-11-03T17:03:31.6070000Z   ✓ returns a stale cache (15 ms)
+2026-11-03T17:03:31.9980000Z   ✓ emits empty input (72 ms)
+2026-11-03T17:03:32.0780000Z   ✓ rounds large payloads (63 ms)
+2026-11-03T17:03:32.4200000Z PASS src/webhooks/reducer.test.ts (3.927 s)
+2026-11-03T17:03:32.6250000Z   ✓ emits duplicate ids (36 ms)
+2026-11-03T17:03:32.8050000Z   ✓ returns timeouts gracefully (79 ms)
+2026-11-03T17:03:33.1240000Z   ✓ retries concurrent writes (65 ms)
+2026-11-03T17:03:33.3660000Z   ✓ validates trailing slashes (76 ms)
+2026-11-03T17:03:33.3900000Z   ✓ rounds invalid json (4 ms)
+2026-11-03T17:03:33.4280000Z   ✓ rounds large payloads (47 ms)
+2026-11-03T17:03:33.6420000Z   ✓ caches invalid json (80 ms)
+2026-11-03T17:03:33.8280000Z   ✓ ignores duplicate ids (26 ms)
+2026-11-03T17:03:34.1490000Z   ✓ handles trailing slashes (35 ms)
+2026-11-03T17:03:34.3340000Z PASS src/export/controller.test.ts (2.680 s)
+2026-11-03T17:03:34.6040000Z   ✓ validates invalid json (61 ms)
+2026-11-03T17:03:34.7270000Z   ✓ rounds empty input (35 ms)
+2026-11-03T17:03:35.1270000Z   ✓ validates negative totals (26 ms)
+2026-11-03T17:03:35.4860000Z   ✓ returns timeouts gracefully (54 ms)
+2026-11-03T17:03:35.6660000Z   ✓ renders error responses (50 ms)
+2026-11-03T17:03:36.0330000Z   ✓ validates expired tokens (27 ms)
+2026-11-03T17:03:36.3320000Z   ✓ validates empty input (30 ms)
+2026-11-03T17:03:36.3610000Z   ✓ parses missing fields (36 ms)
+2026-11-03T17:03:36.7270000Z   ✓ parses partial failures (24 ms)
+2026-11-03T17:03:36.7310000Z   ✓ normalises a stale cache (8 ms)
+2026-11-03T17:03:37.0730000Z   ✓ rounds empty input (9 ms)
+2026-11-03T17:03:37.3790000Z   ✓ ignores timeouts gracefully (14 ms)
+2026-11-03T17:03:37.4360000Z   ✓ validates trailing slashes (76 ms)
+2026-11-03T17:03:37.7470000Z PASS src/checkout/validator.test.ts (3.662 s)
+2026-11-03T17:03:37.9790000Z   ✓ caches empty input (79 ms)
+2026-11-03T17:03:38.0270000Z   ✓ validates timeouts gracefully (52 ms)
+2026-11-03T17:03:38.2070000Z   ✓ caches timeouts gracefully (52 ms)
+2026-11-03T17:03:38.4470000Z   ✓ emits expired tokens (42 ms)
+2026-11-03T17:03:38.5230000Z   ✓ renders expired tokens (16 ms)
+2026-11-03T17:03:38.7240000Z [http] Error: upstream timeout (expected by test) id=a69d4c19-b323-4efc-aee9-986ab21facad
+2026-11-03T17:03:38.7250000Z PASS src/auth/mapper.test.ts (3.159 s)
+2026-11-03T17:03:39.0980000Z   ✓ rounds empty input (25 ms)
+2026-11-03T17:03:39.3690000Z   ✓ returns partial failures (72 ms)
+2026-11-03T17:03:39.3820000Z   ✓ validates empty input (80 ms)
+2026-11-03T17:03:39.7750000Z   ✓ rounds missing fields (39 ms)
+2026-11-03T17:03:39.7820000Z   ✓ parses missing fields (35 ms)
+2026-11-03T17:03:39.7970000Z   ✓ rounds missing fields (74 ms)
+2026-11-03T17:03:39.8870000Z   ✓ validates concurrent writes (22 ms)
+2026-11-03T17:03:40.2680000Z   ✓ handles a stale cache (5 ms)
+2026-11-03T17:03:40.3690000Z   ✓ caches duplicate ids (29 ms)
+2026-11-03T17:03:40.4190000Z   ✓ rejects error responses (7 ms)
+2026-11-03T17:03:40.6390000Z [server] listening on port 58392
+2026-11-03T17:03:40.7260000Z PASS src/profile/mapper.test.ts (0.669 s)
+2026-11-03T17:03:40.8280000Z   ✓ rejects unicode names (10 ms)
+2026-11-03T17:03:41.0950000Z   ✓ validates missing fields (35 ms)
+2026-11-03T17:03:41.3920000Z   ✓ ignores missing fields (48 ms)
+2026-11-03T17:03:41.4000000Z   ✓ returns error responses (17 ms)
+2026-11-03T17:03:41.7800000Z   ✓ caches invalid json (42 ms)
+2026-11-03T17:03:41.9520000Z   ✓ returns concurrent writes (1 ms)
+2026-11-03T17:03:42.2950000Z   ✓ rejects timeouts gracefully (30 ms)
+2026-11-03T17:03:42.3560000Z   ✓ rounds expired tokens (75 ms)
+2026-11-03T17:03:42.5650000Z   ✓ caches expired tokens (34 ms)
+2026-11-03T17:03:42.6100000Z   ✓ rounds duplicate ids (69 ms)
+2026-11-03T17:03:42.9170000Z   ✓ validates invalid json (67 ms)
+2026-11-03T17:03:43.0540000Z PASS src/audit/policy.test.ts (2.614 s)
+2026-11-03T17:03:43.1210000Z   ✓ caches trailing slashes (45 ms)
+2026-11-03T17:03:43.2060000Z   ✓ caches error responses (56 ms)
+2026-11-03T17:03:43.2880000Z   ✓ caches empty input (43 ms)
+2026-11-03T17:03:43.6280000Z   ✓ rejects invalid json (62 ms)
+2026-11-03T17:03:43.7100000Z   ✓ renders partial failures (20 ms)
+2026-11-03T17:03:44.0080000Z   ✓ handles a stale cache (12 ms)
+2026-11-03T17:03:44.0550000Z [server] listening on port 47274
+2026-11-03T17:03:44.2170000Z [http] request id=f1c61291-3c50-43c9-ad2b-31cd09f8eb07 took 8ms status=200
+2026-11-03T17:03:44.2560000Z PASS src/cart/controller.test.ts (1.389 s)
+2026-11-03T17:03:44.5300000Z   ✓ renders empty input (8 ms)
+2026-11-03T17:03:44.9090000Z   ✓ normalises large payloads (7 ms)
+2026-11-03T17:03:45.1290000Z   ✓ validates missing fields (29 ms)
+2026-11-03T17:03:45.4480000Z   ✓ caches trailing slashes (63 ms)
+2026-11-03T17:03:45.7670000Z   ✓ rounds expired tokens (79 ms)
+2026-11-03T17:03:46.0010000Z PASS src/orders/repository.test.ts (0.417 s)
+2026-11-03T17:03:46.2650000Z   ✓ validates concurrent writes (6 ms)
+2026-11-03T17:03:46.4490000Z   ✓ returns large payloads (15 ms)
+2026-11-03T17:03:46.6490000Z   ✓ renders unicode names (14 ms)
+2026-11-03T17:03:47.0060000Z   ✓ ignores negative totals (72 ms)
+2026-11-03T17:03:47.3090000Z   ✓ ignores a stale cache (24 ms)
+2026-11-03T17:03:47.6910000Z   ✓ caches partial failures (6 ms)
+2026-11-03T17:03:48.0660000Z   ✓ ignores large payloads (48 ms)
+2026-11-03T17:03:48.2360000Z   ✓ emits timeouts gracefully (2 ms)
+2026-11-03T17:03:48.4080000Z   ✓ rounds expired tokens (49 ms)
+2026-11-03T17:03:48.4710000Z [http] Error: upstream timeout (expected by test) id=2b08a710-608c-4815-a937-379db8268958
+2026-11-03T17:03:48.6160000Z PASS src/geo/reducer.test.ts (1.870 s)
+2026-11-03T17:03:48.8560000Z   ✓ handles duplicate ids (21 ms)
+2026-11-03T17:03:49.0690000Z   ✓ returns empty input (15 ms)
+2026-11-03T17:03:49.4450000Z   ✓ normalises error responses (47 ms)
+2026-11-03T17:03:49.7270000Z   ✓ parses concurrent writes (17 ms)
+2026-11-03T17:03:49.8250000Z   ✓ normalises large payloads (71 ms)
+2026-11-03T17:03:49.8470000Z   ✓ parses invalid json (10 ms)
+2026-11-03T17:03:50.0580000Z   ✓ rounds timeouts gracefully (44 ms)
+2026-11-03T17:03:50.2040000Z   ✓ rounds concurrent writes (19 ms)
+2026-11-03T17:03:50.5380000Z   ✓ rounds missing fields (5 ms)
+2026-11-03T17:03:50.6820000Z   ✓ ignores duplicate ids (18 ms)
+2026-11-03T17:03:50.9010000Z   ✓ caches unicode names (67 ms)
+2026-11-03T17:03:51.1810000Z   ✓ emits duplicate ids (58 ms)
+2026-11-03T17:03:51.5710000Z Test Suites: 16 passed, 16 total
+2026-11-03T17:03:51.7990000Z Tests:       137 passed, 137 total
+2026-11-03T17:03:51.8030000Z Snapshots:   0 total
+2026-11-03T17:03:52.0670000Z Time:        40.899 s
+2026-11-03T17:03:52.1300000Z Ran all test suites.
+2026-11-03T17:03:52.2610000Z ##[endgroup]
+2026-11-03T17:03:52.4540000Z ##[group]Run docker build -t storefront .
+2026-11-03T17:03:52.6020000Z #1 [internal] load build definition from Dockerfile
+2026-11-03T17:03:52.9370000Z #1 transferring dockerfile: 612B done
+2026-11-03T17:03:53.2030000Z #2 [internal] load metadata for docker.io/library/node:20-slim
+2026-11-03T17:03:53.5560000Z #2 DONE 0.5s
+2026-11-03T17:03:53.6140000Z #3 [1/5] FROM docker.io/library/node:20-slim@sha256:5fd3b0b5c1a6d1b2c0e9f7a48b3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d
+2026-11-03T17:03:53.6540000Z #3 sha256:6add5faee2383237a1028df1ac71774cd563260da2bb9e826a455a21e13cdbd3 5.1MB / 48.2MB 3.1s
+2026-11-03T17:03:53.8480000Z #3 sha256:4c2cdf7ea733e68cdfad8b3444aa7d287489a3ca1632c6f0a18c9d23a52d9db3 14.9MB / 48.2MB 0.6s
+2026-11-03T17:03:54.1380000Z #3 sha256:0e2fedd98a1eeab37fdf7ebf79f6693ae1865ea9c083f38bae47753a160d0ad1 34.9MB / 48.2MB 2.9s
+2026-11-03T17:03:54.4880000Z #3 sha256:c3847f92e11524d45a4f3d196efe4bb65a1cfc2ab2013eb938ef8400ec228533 0.9MB / 48.2MB 4.2s
+2026-11-03T17:03:54.5690000Z #3 sha256:cf03949750783cdf4d4eff04d964edf8a938d2122c81bc90d52b8b156943c585 3.8MB / 48.2MB 0.4s
+2026-11-03T17:03:54.8500000Z #3 DONE 3.4s
+2026-11-03T17:03:55.0310000Z #4 [2/5] WORKDIR /app
+2026-11-03T17:03:55.1650000Z #4 CACHED
+2026-11-03T17:03:55.4100000Z #5 [3/5] COPY package*.json ./
+2026-11-03T17:03:55.6270000Z #5 DONE 12.7s
+2026-11-03T17:03:55.9440000Z #6 [4/5] RUN npm ci --omit=dev
+2026-11-03T17:03:56.0150000Z #6 DONE 3.7s
+2026-11-03T17:03:56.0270000Z #7 [5/5] COPY dist ./dist
+2026-11-03T17:03:56.3630000Z #7 DONE 8.1s
+2026-11-03T17:03:56.3670000Z #8 exporting to image
+2026-11-03T17:03:56.4130000Z #8 writing image sha256:9f7f3406751e791e20a9d325dde27bdb73ec257bc24e73eb4406522e2e60a7ac done
+2026-11-03T17:03:56.5200000Z #8 naming to docker.io/library/storefront done
+2026-11-03T17:03:56.8380000Z #8 DONE 0.4s
+2026-11-03T17:03:56.8950000Z ##[endgroup]
+2026-11-03T17:03:56.9520000Z Uploading coverage report to artifacts
+2026-11-03T17:03:57.2980000Z Artifact coverage-fdf4c14 has been successfully uploaded! Final size is 88070 bytes.
+2026-11-03T17:03:57.4620000Z Post job cleanup.
+2026-11-03T17:03:57.6690000Z [command]/usr/bin/git version
+2026-11-03T17:03:57.7920000Z git version 2.47.0
+2026-11-03T17:03:58.1640000Z Cleaning up orphan processes

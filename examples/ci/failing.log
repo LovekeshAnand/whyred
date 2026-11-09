@@ -1,0 +1,263 @@
+2026-11-02T20:19:00.2690000Z Current runner version: '2.319.1'
+2026-11-02T20:19:00.3350000Z Runner name: 'GitHub Actions 19'
+2026-11-02T20:19:00.5470000Z ##[group]Operating System
+2026-11-02T20:19:00.7290000Z Ubuntu 24.04.1 LTS
+2026-11-02T20:19:00.7950000Z ##[endgroup]
+2026-11-02T20:19:01.1500000Z Download action repository 'actions/checkout@v4' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-02T20:19:01.1930000Z ##[group]Run actions/checkout@v4
+2026-11-02T20:19:01.2770000Z Syncing repository: acme/storefront
+2026-11-02T20:19:01.4820000Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --depth=1 origin +c27b8ac7d455b3b1d46f6585d5b8d22f097cc32c:refs/remotes/origin/main
+2026-11-02T20:19:01.7160000Z remote: Total 967 (delta 28), reused 462 (delta 1), pack-reused 0
+2026-11-02T20:19:01.9860000Z HEAD is now at c27b8ac fix typo in readme
+2026-11-02T20:19:02.2320000Z ##[endgroup]
+2026-11-02T20:19:02.4820000Z ##[group]Run actions/setup-node@v4
+2026-11-02T20:19:02.8520000Z Found in cache @ /opt/hostedtoolcache/node/20.11.0/x64
+2026-11-02T20:19:03.1240000Z Cache restored from key: node-cache-Linux-x64-npm-5a1ef3e542bb693f690db448b8a9d21ffcec1010eb29911a346a805ece5d4235
+2026-11-02T20:19:03.2920000Z ##[endgroup]
+2026-11-02T20:19:03.5020000Z ##[group]Run npm ci
+2026-11-02T20:19:03.8280000Z (node:1879) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T20:19:04.1870000Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it.
+2026-11-02T20:19:04.2710000Z npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+2026-11-02T20:19:04.4020000Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+2026-11-02T20:19:04.7320000Z + lodash@0.4.11
+2026-11-02T20:19:04.9990000Z + axios@5.5.27
+2026-11-02T20:19:05.2810000Z + express@7.18.5
+2026-11-02T20:19:05.3850000Z + zod@2.2.27
+2026-11-02T20:19:05.6790000Z + dayjs@3.16.10
+2026-11-02T20:19:05.6930000Z + uuid@4.19.1
+2026-11-02T20:19:05.7640000Z + chalk@4.18.8
+2026-11-02T20:19:06.1460000Z + debug@8.1.5
+2026-11-02T20:19:06.3940000Z + ws@3.16.1
+2026-11-02T20:19:06.5740000Z + pino@8.9.17
+2026-11-02T20:19:06.9350000Z + yargs@5.7.22
+2026-11-02T20:19:07.2550000Z + glob@0.11.23
+2026-11-02T20:19:07.4850000Z + semver@0.7.15
+2026-11-02T20:19:07.5020000Z + minimist@1.12.28
+2026-11-02T20:19:07.8900000Z + qs@8.19.23
+2026-11-02T20:19:08.0240000Z + ms@5.13.25
+2026-11-02T20:19:08.3290000Z + nanoid@1.16.23
+2026-11-02T20:19:08.3570000Z + undici@2.9.8
+2026-11-02T20:19:08.3750000Z + fastify@6.19.3
+2026-11-02T20:19:08.6820000Z + knex@0.4.23
+2026-11-02T20:19:09.0330000Z + pg@2.12.27
+2026-11-02T20:19:09.4200000Z + redis@5.5.7
+2026-11-02T20:19:09.6380000Z + bullmq@0.14.22
+2026-11-02T20:19:09.6600000Z + sharp@4.12.26
+2026-11-02T20:19:09.9580000Z + jose@3.18.20
+2026-11-02T20:19:10.0580000Z + bcrypt@1.2.11
+2026-11-02T20:19:10.4190000Z + helmet@0.14.23
+2026-11-02T20:19:10.6710000Z + cors@5.17.13
+2026-11-02T20:19:10.9950000Z + dotenv@4.12.16
+2026-11-02T20:19:11.3870000Z + commander@0.11.7
+2026-11-02T20:19:11.4090000Z + ora@1.17.20
+2026-11-02T20:19:11.7770000Z + execa@2.3.9
+2026-11-02T20:19:11.8370000Z + tslib@8.11.24
+2026-11-02T20:19:12.0970000Z + rxjs@0.8.8
+2026-11-02T20:19:12.2940000Z + immer@6.12.26
+2026-11-02T20:19:12.6290000Z + date-fns@0.14.20
+2026-11-02T20:19:13.0090000Z + ramda@3.15.19
+2026-11-02T20:19:13.1370000Z + cheerio@8.15.15
+2026-11-02T20:19:13.4070000Z + marked@7.11.6
+2026-11-02T20:19:13.8010000Z + mime@7.2.7
+2026-11-02T20:19:14.1400000Z added 1423 packages, and audited 1424 packages in 13s
+2026-11-02T20:19:14.3530000Z 187 packages are looking for funding
+2026-11-02T20:19:14.4520000Z found 0 vulnerabilities
+2026-11-02T20:19:14.6910000Z ##[endgroup]
+2026-11-02T20:19:14.8130000Z ##[group]Run npm run build
+2026-11-02T20:19:15.1670000Z > storefront@2.8.0 build
+2026-11-02T20:19:15.5390000Z > tsc --noEmit && vite build
+2026-11-02T20:19:15.8230000Z vite v5.4.10 building for production...
+2026-11-02T20:19:16.1360000Z transforming...
+2026-11-02T20:19:16.4830000Z ✓ 1342 modules transformed.
+2026-11-02T20:19:16.5420000Z rendering chunks...
+2026-11-02T20:19:16.7020000Z computing gzip size...
+2026-11-02T20:19:16.9420000Z dist/index.html                   0.48 kB │ gzip:  0.30 kB
+2026-11-02T20:19:17.1880000Z dist/assets/index-LP6VmJRz.js   321.79 kB │ gzip: 51.16 kB
+2026-11-02T20:19:17.3270000Z dist/assets/vendor-a5Yjtlht.js   310.52 kB │ gzip: 80.44 kB
+2026-11-02T20:19:17.6180000Z dist/assets/checkout-JW1AvyqZ.js   208.21 kB │ gzip: 77.44 kB
+2026-11-02T20:19:17.6920000Z dist/assets/admin-zqf1mijF.js   108.21 kB │ gzip: 63.03 kB
+2026-11-02T20:19:17.7740000Z ✓ built in 4.08s
+2026-11-02T20:19:17.8820000Z ##[endgroup]
+2026-11-02T20:19:17.9390000Z ##[group]Run npm test -- --ci
+2026-11-02T20:19:17.9460000Z > storefront@2.8.0 test
+2026-11-02T20:19:17.9730000Z > jest --ci
+2026-11-02T20:19:18.1760000Z PASS src/audit/validator.test.ts (3.097 s)
+2026-11-02T20:19:18.4690000Z   ✓ emits duplicate ids (48 ms)
+2026-11-02T20:19:18.5960000Z   ✓ renders invalid json (36 ms)
+2026-11-02T20:19:18.6860000Z   ✓ returns invalid json (40 ms)
+2026-11-02T20:19:18.8000000Z   ✓ emits a stale cache (64 ms)
+2026-11-02T20:19:19.0920000Z   ✓ validates missing fields (6 ms)
+2026-11-02T20:19:19.1910000Z   ✓ parses a stale cache (38 ms)
+2026-11-02T20:19:19.4070000Z   ✓ handles missing fields (59 ms)
+2026-11-02T20:19:19.4890000Z   ✓ ignores trailing slashes (71 ms)
+2026-11-02T20:19:19.8690000Z [http] Error: upstream timeout (expected by test) id=7ad31168-c2d9-42fd-a678-624162bc0cff
+2026-11-02T20:19:20.0620000Z PASS src/notify/validator.test.ts (2.653 s)
+2026-11-02T20:19:20.4140000Z   ✓ caches missing fields (27 ms)
+2026-11-02T20:19:20.7160000Z   ✓ ignores concurrent writes (52 ms)
+2026-11-02T20:19:20.7940000Z   ✓ validates invalid json (36 ms)
+2026-11-02T20:19:20.9640000Z   ✓ parses a stale cache (76 ms)
+2026-11-02T20:19:20.9850000Z   ✓ returns large payloads (74 ms)
+2026-11-02T20:19:21.2700000Z   ✓ caches partial failures (2 ms)
+2026-11-02T20:19:21.5490000Z PASS src/checkout/client.test.ts (1.422 s)
+2026-11-02T20:19:21.5520000Z   ✓ ignores unicode names (1 ms)
+2026-11-02T20:19:21.9490000Z   ✓ returns timeouts gracefully (63 ms)
+2026-11-02T20:19:21.9600000Z   ✓ renders timeouts gracefully (40 ms)
+2026-11-02T20:19:22.2730000Z   ✓ caches negative totals (33 ms)
+2026-11-02T20:19:22.3000000Z   ✓ renders partial failures (23 ms)
+2026-11-02T20:19:22.5400000Z   ✓ retries timeouts gracefully (69 ms)
+2026-11-02T20:19:22.7370000Z PASS src/inventory/service.test.ts (3.313 s)
+2026-11-02T20:19:23.0710000Z   ✓ returns empty input (39 ms)
+2026-11-02T20:19:23.1760000Z   ✓ ignores expired tokens (46 ms)
+2026-11-02T20:19:23.2690000Z   ✓ emits large payloads (22 ms)
+2026-11-02T20:19:23.2860000Z   ✓ renders empty input (62 ms)
+2026-11-02T20:19:23.4860000Z   ✓ ignores trailing slashes (20 ms)
+2026-11-02T20:19:23.5690000Z   ✓ returns a stale cache (53 ms)
+2026-11-02T20:19:23.7410000Z   ✓ emits empty input (80 ms)
+2026-11-02T20:19:23.9030000Z   ✓ rounds large payloads (57 ms)
+2026-11-02T20:19:23.9460000Z [server] listening on port 56059
+2026-11-02T20:19:24.0860000Z [http] request id=d19be808-d0d6-4ab6-a0ca-ca44b96d3a6e took 82ms status=200
+2026-11-02T20:19:24.2240000Z PASS src/profile/mapper.test.ts (3.150 s)
+2026-11-02T20:19:24.5240000Z   ✓ rejects unicode names (34 ms)
+2026-11-02T20:19:24.9190000Z   ✓ validates missing fields (59 ms)
+2026-11-02T20:19:25.0430000Z   ✓ ignores missing fields (31 ms)
+2026-11-02T20:19:25.1900000Z   ✓ returns error responses (36 ms)
+2026-11-02T20:19:25.3030000Z   ✓ caches invalid json (69 ms)
+2026-11-02T20:19:25.4360000Z   ✓ returns concurrent writes (18 ms)
+2026-11-02T20:19:25.6820000Z   ✓ rejects timeouts gracefully (11 ms)
+2026-11-02T20:19:26.0390000Z   ✓ rounds expired tokens (73 ms)
+2026-11-02T20:19:26.1280000Z   ✓ caches expired tokens (72 ms)
+2026-11-02T20:19:26.2650000Z   ✓ rounds duplicate ids (80 ms)
+2026-11-02T20:19:26.5110000Z   ✓ validates invalid json (28 ms)
+2026-11-02T20:19:26.8800000Z [http] request id=5d2b7491-c2b1-412d-a4a5-30eeebaf6ac6 took 69ms status=200
+2026-11-02T20:19:26.9140000Z PASS src/geo/reducer.test.ts (0.330 s)
+2026-11-02T20:19:27.0720000Z   ✓ handles duplicate ids (46 ms)
+2026-11-02T20:19:27.0800000Z   ✓ returns empty input (45 ms)
+2026-11-02T20:19:27.4790000Z   ✓ normalises error responses (47 ms)
+2026-11-02T20:19:27.5900000Z   ✓ parses concurrent writes (63 ms)
+2026-11-02T20:19:27.7260000Z   ✓ normalises large payloads (7 ms)
+2026-11-02T20:19:27.7340000Z   ✓ parses invalid json (18 ms)
+2026-11-02T20:19:28.0600000Z   ✓ rounds timeouts gracefully (28 ms)
+2026-11-02T20:19:28.2970000Z   ✓ rounds concurrent writes (10 ms)
+2026-11-02T20:19:28.6090000Z   ✓ rounds missing fields (38 ms)
+2026-11-02T20:19:28.9950000Z   ✓ ignores duplicate ids (69 ms)
+2026-11-02T20:19:29.2900000Z   ✓ caches unicode names (6 ms)
+2026-11-02T20:19:29.5060000Z   ✓ emits duplicate ids (50 ms)
+2026-11-02T20:19:29.8130000Z PASS src/audit/policy.test.ts (3.211 s)
+2026-11-02T20:19:30.2030000Z   ✓ caches trailing slashes (35 ms)
+2026-11-02T20:19:30.5520000Z   ✓ caches error responses (11 ms)
+2026-11-02T20:19:30.6510000Z   ✓ caches empty input (68 ms)
+2026-11-02T20:19:30.7510000Z   ✓ rejects invalid json (17 ms)
+2026-11-02T20:19:30.7820000Z   ✓ renders partial failures (11 ms)
+2026-11-02T20:19:30.8340000Z   ✓ handles a stale cache (60 ms)
+2026-11-02T20:19:31.1300000Z [http] request id=3f42fcfc-3ca5-412a-a4f8-f28cc8a31731 took 9ms status=200
+2026-11-02T20:19:31.2320000Z PASS src/orders/repository.test.ts (2.763 s)
+2026-11-02T20:19:31.2690000Z   ✓ validates concurrent writes (27 ms)
+2026-11-02T20:19:31.5720000Z   ✓ returns large payloads (65 ms)
+2026-11-02T20:19:31.9410000Z   ✓ renders unicode names (29 ms)
+2026-11-02T20:19:31.9820000Z   ✓ ignores negative totals (45 ms)
+2026-11-02T20:19:32.0820000Z   ✓ ignores a stale cache (27 ms)
+2026-11-02T20:19:32.3610000Z   ✓ caches partial failures (11 ms)
+2026-11-02T20:19:32.4210000Z   ✓ ignores large payloads (49 ms)
+2026-11-02T20:19:32.8010000Z   ✓ emits timeouts gracefully (43 ms)
+2026-11-02T20:19:32.9840000Z   ✓ rounds expired tokens (62 ms)
+2026-11-02T20:19:33.0060000Z FAIL src/cart/controller.test.ts (2.420 s)
+2026-11-02T20:19:33.3220000Z   ✕ renders empty input (39 ms)
+2026-11-02T20:19:33.5190000Z   ✓ normalises large payloads (13 ms)
+2026-11-02T20:19:33.6270000Z   ✓ validates missing fields (39 ms)
+2026-11-02T20:19:33.7490000Z   ✓ caches trailing slashes (76 ms)
+2026-11-02T20:19:33.8530000Z   ✓ rounds expired tokens (1 ms)
+2026-11-02T20:19:34.1340000Z   ● controller › renders empty input
+2026-11-02T20:19:34.2910000Z     TypeError: (0 , _util.normalise) is not a function
+2026-11-02T20:19:34.4000000Z       at Object.normalise (src/cart/controller.ts:90:2)
+2026-11-02T20:19:34.5540000Z       at Object.<anonymous> (src/cart/controller.test.ts:67:21)
+2026-11-02T20:19:34.8340000Z [http] request id=2f06b86e-ad5c-4cd0-aa6d-d45cd3b7fde2 took 85ms status=200
+2026-11-02T20:19:35.0290000Z FAIL src/auth/mapper.test.ts (3.465 s)
+2026-11-02T20:19:35.1570000Z   ✓ rounds empty input (54 ms)
+2026-11-02T20:19:35.3620000Z   ✓ returns partial failures (73 ms)
+2026-11-02T20:19:35.4270000Z   ✓ validates empty input (5 ms)
+2026-11-02T20:19:35.6800000Z   ✓ rounds missing fields (30 ms)
+2026-11-02T20:19:35.9510000Z   ✓ parses missing fields (43 ms)
+2026-11-02T20:19:36.3330000Z   ✓ rounds missing fields (9 ms)
+2026-11-02T20:19:36.6400000Z   ✓ validates concurrent writes (34 ms)
+2026-11-02T20:19:37.0050000Z   ✓ handles a stale cache (73 ms)
+2026-11-02T20:19:37.0300000Z   ✓ caches duplicate ids (30 ms)
+2026-11-02T20:19:37.0410000Z   ✕ rejects error responses (77 ms)
+2026-11-02T20:19:37.1960000Z   ● mapper › rejects error responses
+2026-11-02T20:19:37.2460000Z     TypeError: (0 , _util.normalise) is not a function
+2026-11-02T20:19:37.3590000Z       at Object.normalise (src/auth/mapper.ts:90:16)
+2026-11-02T20:19:37.7310000Z       at Object.<anonymous> (src/auth/mapper.test.ts:129:16)
+2026-11-02T20:19:37.9960000Z PASS src/ratelimit/controller.test.ts (3.170 s)
+2026-11-02T20:19:38.2430000Z   ✓ renders missing fields (23 ms)
+2026-11-02T20:19:38.2680000Z   ✓ normalises missing fields (66 ms)
+2026-11-02T20:19:38.4300000Z   ✓ parses negative totals (15 ms)
+2026-11-02T20:19:38.7360000Z   ✓ validates timeouts gracefully (79 ms)
+2026-11-02T20:19:39.1050000Z   ✓ retries duplicate ids (60 ms)
+2026-11-02T20:19:39.1350000Z   ✓ normalises empty input (47 ms)
+2026-11-02T20:19:39.1580000Z PASS src/webhooks/reducer.test.ts (2.120 s)
+2026-11-02T20:19:39.4650000Z   ✓ emits duplicate ids (43 ms)
+2026-11-02T20:19:39.6050000Z   ✓ returns timeouts gracefully (62 ms)
+2026-11-02T20:19:39.9240000Z   ✓ retries concurrent writes (47 ms)
+2026-11-02T20:19:40.2890000Z   ✓ validates trailing slashes (75 ms)
+2026-11-02T20:19:40.4960000Z   ✓ rounds invalid json (20 ms)
+2026-11-02T20:19:40.7280000Z   ✓ rounds large payloads (22 ms)
+2026-11-02T20:19:41.1130000Z   ✓ caches invalid json (34 ms)
+2026-11-02T20:19:41.4040000Z   ✓ ignores duplicate ids (79 ms)
+2026-11-02T20:19:41.5160000Z   ✓ handles trailing slashes (17 ms)
+2026-11-02T20:19:41.7280000Z [http] request id=9668caee-0774-4f97-a866-c76fb9cc453d took 4ms status=200
+2026-11-02T20:19:41.7540000Z PASS src/checkout/validator.test.ts (1.992 s)
+2026-11-02T20:19:42.0420000Z   ✓ caches empty input (35 ms)
+2026-11-02T20:19:42.3290000Z   ✓ validates timeouts gracefully (48 ms)
+2026-11-02T20:19:42.5850000Z   ✓ caches timeouts gracefully (46 ms)
+2026-11-02T20:19:42.8760000Z   ✓ emits expired tokens (75 ms)
+2026-11-02T20:19:43.0950000Z   ✓ renders expired tokens (29 ms)
+2026-11-02T20:19:43.1930000Z PASS src/orders/mapper.test.ts (2.665 s)
+2026-11-02T20:19:43.3890000Z   ✓ rounds error responses (37 ms)
+2026-11-02T20:19:43.6670000Z   ✓ retries duplicate ids (26 ms)
+2026-11-02T20:19:43.7940000Z   ✓ returns negative totals (37 ms)
+2026-11-02T20:19:44.1350000Z   ✓ normalises a stale cache (33 ms)
+2026-11-02T20:19:44.2370000Z   ✓ retries error responses (14 ms)
+2026-11-02T20:19:44.4100000Z   ✓ caches invalid json (60 ms)
+2026-11-02T20:19:44.6280000Z   ✓ returns error responses (39 ms)
+2026-11-02T20:19:44.8870000Z   ✓ validates duplicate ids (18 ms)
+2026-11-02T20:19:45.0590000Z   ✓ normalises expired tokens (16 ms)
+2026-11-02T20:19:45.1990000Z   ✓ rejects expired tokens (72 ms)
+2026-11-02T20:19:45.2620000Z   ✓ emits duplicate ids (80 ms)
+2026-11-02T20:19:45.2960000Z [http] request id=0b240b9f-15c5-45e5-a090-1f4a64d7cfed took 87ms status=200
+2026-11-02T20:19:45.6540000Z PASS src/queue/repository.test.ts (3.920 s)
+2026-11-02T20:19:45.8470000Z   ✓ caches empty input (4 ms)
+2026-11-02T20:19:46.0870000Z   ✓ parses unicode names (71 ms)
+2026-11-02T20:19:46.3170000Z   ✓ ignores invalid json (12 ms)
+2026-11-02T20:19:46.7070000Z   ✓ caches concurrent writes (40 ms)
+2026-11-02T20:19:46.7560000Z   ✓ caches concurrent writes (31 ms)
+2026-11-02T20:19:46.8630000Z   ✓ emits timeouts gracefully (70 ms)
+2026-11-02T20:19:47.0910000Z   ✓ emits large payloads (11 ms)
+2026-11-02T20:19:47.2820000Z   ✓ retries trailing slashes (71 ms)
+2026-11-02T20:19:47.4010000Z   ✓ rejects unicode names (62 ms)
+2026-11-02T20:19:47.5910000Z   ✓ validates a stale cache (39 ms)
+2026-11-02T20:19:47.8320000Z   ✓ rejects expired tokens (8 ms)
+2026-11-02T20:19:47.8720000Z   ✓ validates unicode names (18 ms)
+2026-11-02T20:19:47.9370000Z [server] listening on port 53647
+2026-11-02T20:19:48.1310000Z PASS src/export/controller.test.ts (1.029 s)
+2026-11-02T20:19:48.2250000Z   ✓ validates invalid json (64 ms)
+2026-11-02T20:19:48.4280000Z   ✓ rounds empty input (2 ms)
+2026-11-02T20:19:48.4920000Z   ✓ validates negative totals (58 ms)
+2026-11-02T20:19:48.6420000Z   ✓ returns timeouts gracefully (72 ms)
+2026-11-02T20:19:48.9370000Z   ✓ renders error responses (59 ms)
+2026-11-02T20:19:49.1730000Z   ✓ validates expired tokens (44 ms)
+2026-11-02T20:19:49.3080000Z   ✓ validates empty input (10 ms)
+2026-11-02T20:19:49.3200000Z   ✓ parses missing fields (14 ms)
+2026-11-02T20:19:49.6570000Z   ✓ parses partial failures (26 ms)
+2026-11-02T20:19:49.8210000Z   ✓ normalises a stale cache (69 ms)
+2026-11-02T20:19:50.1770000Z   ✓ rounds empty input (18 ms)
+2026-11-02T20:19:50.3060000Z   ✓ ignores timeouts gracefully (25 ms)
+2026-11-02T20:19:50.4550000Z   ✓ validates trailing slashes (32 ms)
+2026-11-02T20:19:50.7200000Z Test Suites: 2 failed, 14 passed, 16 total
+2026-11-02T20:19:51.0760000Z Tests:       2 failed, 135 passed, 137 total
+2026-11-02T20:19:51.3870000Z Snapshots:   0 total
+2026-11-02T20:19:51.4910000Z Time:        31.165 s
+2026-11-02T20:19:51.8290000Z Ran all test suites.
+2026-11-02T20:19:52.1460000Z ##[error]Process completed with exit code 1.
+2026-11-02T20:19:52.1530000Z Post job cleanup.
+2026-11-02T20:19:52.5010000Z [command]/usr/bin/git version
+2026-11-02T20:19:52.8100000Z git version 2.47.0
+2026-11-02T20:19:52.8860000Z Cleaning up orphan processes

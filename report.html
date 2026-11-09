@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>whyred report</title>
+<style>
+:root {
+  --paper: #f3efe6; --card: #fbf9f4; --ink: #1c1b19; --muted: #7b7467; --rule: #d9d2c3;
+  --new: #c8321f; --new-bg: #c8321f14; --changed: #a86a10; --changed-bg: #a86a1016;
+  --spike: #6247b5; --spike-bg: #6247b514; --mark: #f6d98a;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme=light]) {
+  --paper: #131210; --card: #1a1916; --ink: #ebe6da; --muted: #8e8778; --rule: #302d27;
+  --new: #ff6650; --new-bg: #ff66501c; --changed: #e5aa40; --changed-bg: #e5aa401a;
+  --spike: #a993f5; --spike-bg: #a993f51c; --mark: #6b5310;
+} }
+:root[data-theme=dark] {
+  --paper: #131210; --card: #1a1916; --ink: #ebe6da; --muted: #8e8778; --rule: #302d27;
+  --new: #ff6650; --new-bg: #ff66501c; --changed: #e5aa40; --changed-bg: #e5aa401a;
+  --spike: #a993f5; --spike-bg: #a993f51c; --mark: #6b5310;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 var(--serif); }
+main { max-width: 1120px; margin: 0 auto; padding: 0 20px 80px; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--new); outline-offset: 2px; }
+
+.mast { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 22px 0 14px; border-bottom: 3px double var(--rule); font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.mast b { font: italic 600 22px var(--serif); color: var(--ink); letter-spacing: -.01em; }
+.mast b::after { content: ""; display: inline-block; width: 9px; height: 9px; margin-left: 5px; border-radius: 50%; background: var(--new); }
+.mast span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.mast button { background: none; border: 1px solid var(--rule); border-radius: 99px; padding: 2px 10px; cursor: pointer; flex: none; }
+
+h1 { font-weight: 400; font-size: clamp(30px, 5.2vw, 58px); line-height: 1.06; letter-spacing: -.02em; margin: 44px 0 14px; max-width: 18ch; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--new); font-variant-numeric: tabular-nums; }
+.lede { font-size: 18px; color: var(--muted); max-width: 62ch; margin: 0 0 30px; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin: 0; }
+.stats div { padding: 14px 14px 12px 0; }
+.stats div + div { padding-left: 14px; border-left: 1px solid var(--rule); }
+.stats dt { font: 11px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.stats dd { margin: 2px 0 0; font-size: 26px; font-variant-numeric: tabular-nums; }
+.stats dd.new { color: var(--new); } .stats dd.changed { color: var(--changed); } .stats dd.spike { color: var(--spike); }
+
+.map { margin: 30px 0 6px; }
+.map .bar { position: relative; height: 46px; background: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 10%) , var(--card); border: 1px solid var(--rule); }
+.map button { position: absolute; bottom: 0; width: 4px; margin-left: -2px; height: 55%; padding: 0; border: 0; cursor: pointer; background: var(--new); }
+.map button.changed { background: var(--changed); } .map button.spike { background: var(--spike); }
+.map button.top { height: 100%; width: 5px; }
+.map button:hover { filter: brightness(1.25); width: 7px; margin-left: -3px; }
+.map .axis { display: flex; justify-content: space-between; font: 11px var(--mono); color: var(--muted); margin-top: 4px; }
+
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 28px 0 8px; font: 12px var(--mono); position: sticky; top: 0; background: var(--paper); padding: 10px 0; z-index: 2; border-bottom: 1px solid var(--rule); }
+.chip { border: 1px solid var(--rule); background: none; border-radius: 99px; padding: 4px 12px; cursor: pointer; }
+.chip::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; background: var(--c); }
+.chip[aria-pressed=false] { opacity: .45; text-decoration: line-through; }
+.tools input { flex: 1 1 180px; min-width: 0; background: var(--card); border: 1px solid var(--rule); border-radius: 99px; padding: 4px 14px; }
+.tools select { background: var(--card); border: 1px solid var(--rule); border-radius: 99px; padding: 4px 10px; }
+.tools .count { color: var(--muted); }
+
+article { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 0 18px; padding: 26px 0; border-bottom: 1px solid var(--rule); scroll-margin-top: 64px; }
+article .rank { font-size: 54px; line-height: .9; color: var(--rule); font-variant-numeric: tabular-nums; text-align: right; }
+article.prime .rank { color: var(--new); }
+article header { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; font: 12px var(--mono); color: var(--muted); margin-bottom: 10px; }
+article header strong { font: 600 17px var(--serif); color: var(--ink); }
+article header .badge { color: var(--new); border: 1px solid currentColor; border-radius: 3px; padding: 0 6px; text-transform: uppercase; letter-spacing: .08em; font-size: 10px; }
+article header button { margin-left: auto; background: none; border: 0; color: var(--muted); cursor: pointer; text-decoration: underline; padding: 0; }
+.log { font: 12.5px/1.55 var(--mono); background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 6px 0; overflow: hidden; }
+.row { display: grid; grid-template-columns: 22px 7ch minmax(0, 1fr); border-left: 3px solid transparent; padding-right: 12px; }
+.row > i { font-style: normal; text-align: center; font-weight: 700; color: var(--k); }
+.row > u { text-decoration: none; text-align: right; padding-right: 1.5ch; color: var(--muted); user-select: none; }
+.row > span { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--muted); }
+.row.new, .row.changed, .row.spike { border-left-color: var(--k); background: var(--kb); }
+.row.new > span, .row.changed > span, .row.spike > span { color: var(--ink); }
+.row.new { --k: var(--new); --kb: var(--new-bg); } .row.changed { --k: var(--changed); --kb: var(--changed-bg); } .row.spike { --k: var(--spike); --kb: var(--spike-bg); }
+.row mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 2px; }
+.note { display: inline-block; margin-left: 10px; font-size: 11px; color: var(--k); border: 1px solid currentColor; border-radius: 3px; padding: 0 5px; white-space: normal; }
+
+.more { display: block; margin: 26px auto; background: none; border: 1px solid var(--ink); border-radius: 99px; padding: 8px 22px; cursor: pointer; font: 13px var(--mono); }
+h2 { font-weight: 400; font-size: 30px; letter-spacing: -.01em; margin: 56px 0 6px; }
+h2 + p { color: var(--muted); margin: 0 0 14px; max-width: 62ch; }
+.missing .row > i { color: var(--muted); }
+.empty { padding: 60px 0; text-align: center; color: var(--muted); font-size: 18px; }
+footer { margin-top: 60px; padding-top: 14px; border-top: 3px double var(--rule); font: 11px/1.7 var(--mono); color: var(--muted); }
+footer b { color: var(--ink); }
+@media (max-width: 640px) { article { grid-template-columns: 1fr; } article .rank { text-align: left; font-size: 34px; margin-bottom: 6px; } .row { grid-template-columns: 18px 6ch minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <div class="mast"><b>whyred</b><span id="files"></span><button id="theme" type="button" title="Toggle light / dark">theme</button></div>
+  <h1 id="headline"></h1>
+  <p class="lede" id="lede"></p>
+  <dl class="stats" id="stats"></dl>
+  <div class="map" id="map" hidden><div class="bar" id="bar"></div><div class="axis"><span>line 1</span><span>where in the log it went wrong</span><span id="lastline"></span></div></div>
+  <div class="tools" id="tools" hidden>
+    <button class="chip" type="button" data-kind="new" aria-pressed="true" style="--c:var(--new)">new line</button>
+    <button class="chip" type="button" data-kind="changed" aria-pressed="true" style="--c:var(--changed)">changed value</button>
+    <button class="chip" type="button" data-kind="spike" aria-pressed="true" style="--c:var(--spike)">repeat spike</button>
+    <input id="q" type="search" placeholder="filter blocks…  ( / )" aria-label="Filter blocks by text">
+    <select id="sort" aria-label="Order"><option value="rank">most suspicious first</option><option value="line">log order</option></select>
+    <span class="count" id="count"></span>
+  </div>
+  <div id="blocks"></div>
+  <section id="missing" hidden>
+    <h2>What never happened</h2>
+    <p id="missing-lede"></p>
+    <div class="log missing" id="missing-list"></div>
+  </section>
+  <footer>
+    <b>+</b> a line shape no passing run ever printed &nbsp;·&nbsp; <b>~</b> a known line whose value was constant in passing runs and changed here &nbsp;·&nbsp; <b>*</b> a known line repeated far more often than in any passing run<br>
+    Timestamps, durations, sizes, hashes and ids are ignored; anything passing runs disagree on is learned as noise. Keys: <b>j</b>/<b>k</b> next/previous block, <b>/</b> filter.<br>
+    <span id="gen"></span>
+  </footer>
+</main>
+<script id="data" type="application/json">__WHYRED_DATA__</script>
+<script>
+"use strict";
+const R = JSON.parse(document.getElementById("data").textContent);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const num = n => Number(n).toLocaleString("en-US");
+const byId = id => document.getElementById(id);
+const MARK = { new: "+", changed: "~", spike: "*" };
+const odd = R.new_lines + R.changed_lines + R.spikes;
+
+byId("files").textContent = `${R.failing}  vs  ${R.runs} passing run${R.runs === 1 ? "" : "s"}`;
+byId("files").title = (R.baselines || []).join("\n");
+byId("gen").textContent = `whyred ${R.version}`;
+byId("theme").onclick = () => {
+  const root = document.documentElement, dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+};
+
+const h1 = byId("headline");
+if (odd === 0) h1.textContent = "Nothing sets this run apart.";
+else h1.append(el("em", "", num(odd)), ` of ${num(R.lines)} lines set${odd === 1 ? "s" : ""} this run apart.`);
+const pct = R.lines ? (100 * (1 - odd / R.lines)) : 100;
+byId("lede").textContent = odd === 0
+  ? `Every line of the failing log has a shape the passing runs also printed. Look at what never happened below, or at something outside the log.`
+  : `The other ${pct.toFixed(pct > 99.9 ? 3 : 1)}% of the log is indistinguishable from the passing run${R.runs === 1 ? "" : "s"}: same line shapes, same tracked values.`;
+
+const stats = byId("stats");
+for (const [label, value, cls] of [
+  ["new lines", num(R.new_lines), "new"], ["changed values", num(R.changed_lines), "changed"], ["repeat spikes", num(R.spikes), "spike"],
+  ["never happened", num(R.missing_total), ""], ["baseline runs", num(R.runs), ""], ["shapes learned", num(R.templates), ""], ["wildcards learned", num(R.wildcards), ""],
+]) { const d = el("div"); d.append(el("dt", "", label), el("dd", value === "0" ? "" : cls, value)); stats.append(d); }
+
+// One article per block, built once; filtering only toggles visibility.
+const blocks = R.blocks.map(b => {
+  const kinds = new Set(b.entries.map(e => e.kind).filter(Boolean));
+  const lead = b.entries.reduce((a, e) => (e.score || 0) > (a.score || 0) ? e : a, b.entries[0]);
+  return { b, kinds, lead, text: b.entries.map(e => e.text).join("\n").toLowerCase(), node: null };
+});
+
+function highlight(span, text, values) {
+  let at = 0;
+  const hits = values.map(v => [text.indexOf(v), v]).filter(h => h[0] >= 0).sort((a, b) => a[0] - b[0]);
+  for (const [i, v] of hits) {
+    if (i < at) continue;
+    span.append(text.slice(at, i), el("mark", "", v));
+    at = i + v.length;
+  }
+  span.append(text.slice(at));
+}
+
+function row(e) {
+  const r = el("div", "row " + (e.kind || ""));
+  const span = el("span");
+  if (e.changes) highlight(span, e.text, e.changes.map(c => c.value)); else span.textContent = e.text;
+  for (const c of e.changes || []) span.append(el("b", "note", `passing runs: ${c.baseline.join(" | ")}`));
+  if (e.early) span.append(el("b", "note", "changed before the first failure"));
+  if (e.kind === "spike") span.append(el("b", "note", `${num(e.total)}× here, at most ${num(e.baseline_max)}× in a passing run`));
+  else {
+    if (e.repeat) span.append(el("b", "note", `repeated ${num(e.repeat + 1)}×`));
+    if (e.total) span.append(el("b", "note", `${num(e.total)}× in this log`));
+  }
+  r.append(el("i", "", MARK[e.kind] || ""), el("u", "", e.line), span);
+  return r;
+}
+
+function build(x) {
+  const b = x.b, a = el("article", b.rank === 1 ? "prime" : "");
+  a.id = "b" + b.rank; a.tabIndex = -1;
+  const head = el("header");
+  head.append(el("strong", "", `Line ${num(b.line)}`), el("span", "", `score ${b.score.toFixed(1)}`), el("span", "", `${b.anomalies} anomalous line${b.anomalies === 1 ? "" : "s"}`));
+  if (b.rank === 1) head.append(el("span", "badge", "start here"));
+  const copy = el("button", "", "copy"); copy.type = "button";
+  copy.onclick = () => navigator.clipboard.writeText(b.entries.map(e => `${MARK[e.kind] || " "} ${e.line} | ${e.text}`).join("\n")).then(() => copy.textContent = "copied", () => copy.textContent = "copy failed");
+  head.append(copy);
+  const log = el("div", "log");
+  for (const e of b.entries) log.append(row(e));
+  const body = el("div"); body.append(head, log);
+  a.append(el("div", "rank", String(b.rank).padStart(2, "0")), body);
+  return a;
+}
+
+const PAGE = 60;
+let limit = PAGE;
+const host = byId("blocks");
+function render() {
+  const active = new Set([...document.querySelectorAll(".chip[aria-pressed=true]")].map(c => c.dataset.kind));
+  const q = byId("q").value.trim().toLowerCase(), key = byId("sort").value;
+  const list = blocks.filter(x => [...x.kinds].some(k => active.has(k)) && (!q || x.text.includes(q)))
+    .sort((x, y) => key === "rank" ? x.b.rank - y.b.rank : x.b.line - y.b.line);
+  host.replaceChildren();
+  for (const x of list.slice(0, limit)) host.append(x.node || (x.node = build(x)));
+  if (list.length > limit) {
+    const more = el("button", "more", `show ${Math.min(PAGE, list.length - limit)} more of ${num(list.length - limit)}`);
+    more.type = "button"; more.onclick = () => { limit += PAGE; render(); };
+    host.append(more);
+  }
+  if (!list.length && blocks.length) host.append(el("div", "empty", "No block matches this filter."));
+  byId("count").textContent = `${num(list.length)} of ${num(blocks.length)} blocks`;
+}
+
+if (blocks.length) {
+  byId("tools").hidden = false; byId("map").hidden = false;
+  byId("lastline").textContent = `line ${num(R.lines)}`;
+  for (const x of blocks) {
+    const t = el("button", (x.lead.kind || "new") + (x.b.rank === 1 ? " top" : ""));
+    t.type = "button"; t.style.left = (100 * (x.b.line - 0.5) / Math.max(R.lines, 1)) + "%";
+    t.title = `#${x.b.rank} · line ${num(x.b.line)}\n${x.lead.text.slice(0, 200)}`;
+    t.setAttribute("aria-label", `Jump to block ${x.b.rank}, line ${x.b.line}`);
+    t.onclick = () => { limit = Math.max(limit, blocks.length); byId("q").value = ""; document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "true")); render(); x.node.scrollIntoView({ behavior: "smooth" }); x.node.focus({ preventScroll: true }); };
+    byId("bar").append(t);
+  }
+  document.querySelectorAll(".chip").forEach(c => c.onclick = () => { c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") !== "true"); render(); });
+  byId("q").oninput = () => { limit = PAGE; render(); };
+  byId("sort").onchange = render;
+  render();
+} else {
+  host.append(el("div", "empty", "No anomalous lines."));
+}
+
+if (R.missing_total) {
+  byId("missing").hidden = false;
+  byId("missing-lede").textContent = `${num(R.missing_total)} line shape${R.missing_total === 1 ? "" : "s"} appeared in every passing run and never in this one, in the order passing runs print them. The first few usually show where this run stopped.` + (R.missing_total > R.missing.length ? ` Showing the first ${R.missing.length}.` : "");
+  for (const t of R.missing) { const r = el("div", "row"); r.append(el("i", "", "−"), el("u", "", ""), el("span", "", t)); byId("missing-list").append(r); }
+}
+if (R.truncated) host.before(el("p", "lede", "This log differs from the baseline in more lines than a report keeps; the rest were counted only. Is this the right baseline?"));
+
+addEventListener("keydown", ev => {
+  if (ev.target.matches("input, select") || ev.ctrlKey || ev.metaKey || ev.altKey) { if (ev.key === "Escape") ev.target.blur(); return; }
+  if (ev.key === "/") { ev.preventDefault(); byId("q").focus(); return; }
+  if (ev.key !== "j" && ev.key !== "k") return;
+  const arts = [...host.querySelectorAll("article")]; if (!arts.length) return;
+  const i = arts.indexOf(document.activeElement), next = arts[Math.max(0, Math.min(arts.length - 1, i < 0 ? 0 : i + (ev.key === "j" ? 1 : -1)))];
+  next.focus({ preventScroll: true }); next.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+</script>
+</body>
+</html>
