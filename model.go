@@ -16,6 +16,7 @@ const (
 	maxValLen    = 64 // longer values are never tracked
 	maxBaselines = 64 // run membership is a uint64 bitmask
 	maxExample   = 300
+	maxModel     = 256 << 20 // decompressed bytes; a model of 200 MB logs is ~30 MB
 )
 
 // Slot is one digit-bearing token position of a template.
@@ -35,6 +36,7 @@ type Template struct {
 
 	mask uint64   // bit i set: seen in run i
 	toks []uint64 // token hashes, only needed while learning wildcards
+	lit  []bool   // toks[i] is a literal (digit-free) token
 }
 
 // Model is everything whyred knows about what a passing run looks like.
@@ -80,9 +82,10 @@ func learnRun(r io.Reader, masks []*regexp.Regexp) (*Model, error) {
 			t = &Template{Text: clip(b[:min(len(b), maxExample)]), Order: uint32(len(m.Templates)), Runs: 1}
 			for i, tk := range sc.toks {
 				t.toks = append(t.toks, tk.h)
+				t.lit = append(t.lit, !tk.slot)
 				m.Vocab[tk.h] = true
-				if tk.rnd && len(sc.toks) >= 3 { // a position that holds generated ids accepts any id
-					m.Wild[looKey(h, tk.h, i)] = true
+				if tk.rnd && len(sc.toks) >= 3 { // a position that holds generated ids accepts any id of that length
+					m.Wild[idKey(looKey(h, tk.h, i), int(tk.e-tk.s))] = true
 				}
 				if tk.slot {
 					t.Slots = append(t.Slots, Slot{})
@@ -164,6 +167,9 @@ func mergeRuns(runs []*Model) *Model {
 		m.Runs++
 	}
 	m.learnWildcards()
+	for _, t := range m.Templates {
+		t.toks, t.lit = nil, nil
+	}
 	return m
 }
 
@@ -185,9 +191,10 @@ func sameSet(a, b []string) bool {
 // occur in the same run ("using temp dir /tmp/build-aXkQz" vs ".../build-pLmRt")
 // make that position match anything.
 //
-// Prefix wildcard: templates that share their first four or more tokens,
-// never co-occur, and together appear in every run ("HEAD is now at
-// 3fa9c21 <a different commit message each time>") make the tail free text.
+// Prefix wildcard: templates that occur once per run, share a prefix with at
+// least four literal tokens, never co-occur, and together appear in every run
+// ("HEAD is now at 3fa9c21 <a different commit message each time>") make the
+// tail free text.
 //
 // ponytail: O(tokens of run-unstable templates) memory; fine up to millions of
 // templates, switch to a two-pass count-min filter if models get bigger.
@@ -218,19 +225,28 @@ func (m *Model) learnWildcards() {
 		return false
 	}
 	all := ^uint64(0) >> (64 - m.Runs)
-	loo, prefix := map[uint64]group{}, map[uint64]group{}
+	// Sorted, so that which masks survive the cap never depends on map order.
+	var unstable []uint64
 	for h, t := range m.Templates {
-		n := len(t.toks)
-		if int(t.Runs) == m.Runs || n < 3 {
-			continue
+		if int(t.Runs) < m.Runs && len(t.toks) >= 3 {
+			unstable = append(unstable, h)
 		}
+	}
+	slices.Sort(unstable)
+	loo, prefix := map[uint64]group{}, map[uint64]group{}
+	for _, h := range unstable {
+		t := m.Templates[h]
 		var sum uint64
+		lits := 0
 		for i, th := range t.toks {
 			add(loo, looKey(h, th, i), t.mask)
-			if i >= minPrefix {
+			if lits >= minPrefix && t.Max == 1 {
 				add(prefix, prefixKey(sum, i), t.mask)
 			}
 			sum += mix(th, i)
+			if t.lit[i] {
+				lits++
+			}
 		}
 	}
 	learn := func(k uint64) {
@@ -282,8 +298,9 @@ func loadModel(path string) (*Model, error) {
 		return nil, fmt.Errorf("%s: not a whyred model: %w", path, err)
 	}
 	m := newModel()
-	// Cap decompressed size: a model is untrusted input like any other file.
-	if err := json.NewDecoder(io.LimitReader(gz, 2<<30)).Decode(m); err != nil {
+	// A model is untrusted input like any other file: cap its decompressed
+	// size (the decoder buffers it) and sanitise every string it can print.
+	if err := json.NewDecoder(io.LimitReader(gz, maxModel)).Decode(m); err != nil {
 		return nil, fmt.Errorf("%s: not a whyred model: %w", path, err)
 	}
 	if m.Version != modelVersion {
@@ -295,6 +312,17 @@ func loadModel(path string) (*Model, error) {
 	for h, t := range m.Templates {
 		if t == nil {
 			delete(m.Templates, h)
+			continue
+		}
+		t.Text = clip([]byte(t.Text))
+		for i := range t.Slots {
+			s := &t.Slots[i]
+			if len(s.Vals) == 0 || len(s.Vals) > maxVals {
+				s.Vol, s.Vals = true, nil
+			}
+			for k, v := range s.Vals {
+				s.Vals[k] = clip([]byte(v))
+			}
 		}
 	}
 	return m, nil

@@ -459,13 +459,34 @@ var normalisers = []struct {
 	{regexp.MustCompile(`/tmp/[\w.-]+`), "/tmp/X"},
 }
 
-func normalise(src, dst string) {
+func normalised(src string) []byte {
 	b, err := os.ReadFile(src)
 	must(err)
 	for _, n := range normalisers {
 		b = n.re.ReplaceAll(b, []byte(n.with))
 	}
-	must(os.WriteFile(dst, b, 0o644))
+	return b
+}
+
+func normalise(src, dst string) { must(os.WriteFile(dst, normalised(src), 0o644)) }
+
+// setDiff is the strongest simple script: the same regex normalisation, but
+// order-insensitive - flag every line of the failing log whose normalised
+// form no passing run contains (sort | uniq | comm, in effect).
+func setDiff(baselines []string, failing string) map[int]bool {
+	known := map[string]bool{}
+	for _, p := range baselines {
+		for _, l := range strings.Split(string(normalised(p)), "\n") {
+			known[l] = true
+		}
+	}
+	set := map[int]bool{}
+	for i, l := range strings.Split(strings.TrimSuffix(string(normalised(failing)), "\n"), "\n") {
+		if !known[l] {
+			set[i] = true
+		}
+	}
+	return set
 }
 
 var keywords = regexp.MustCompile(`(?i)error|fail|fatal|exception|panic`)
@@ -538,7 +559,9 @@ func eval(bin string, n int, outPath string) {
 	defer os.RemoveAll(dir)
 	_, diffErr := exec.LookPath("diff")
 
-	names := []string{"grep -iE 'error|fail|fatal|exception|panic'", "diff (1 passing run)", "regex-normalise + diff (1 passing run)", "whyred (1 passing run)", "whyred (2 passing runs)", "whyred (3 passing runs)", "whyred (5 passing runs)"}
+	names := []string{"grep -iE 'error|fail|fatal|exception|panic'", "diff (1 passing run)", "regex-normalise + diff (1 passing run)",
+		"regex-normalise + set difference (1 passing run)", "regex-normalise + set difference (3 passing runs)",
+		"whyred (1 passing run)", "whyred (2 passing runs)", "whyred (3 passing runs)", "whyred (5 passing runs)"}
 	all := map[string]*score{}
 	perFault := map[string]map[string]*score{}
 	get := func(fault, tool string) []*score {
@@ -584,9 +607,11 @@ func eval(bin string, n int, outPath string) {
 			normalise(redPath, nr)
 			record(names[2], gnuDiff(ng, nr), nil)
 		}
+		record(names[3], setDiff(greens[:1], redPath), nil)
+		record(names[4], setDiff(greens[:3], redPath), nil)
 		for i, k := range []int{1, 2, 3, 5} {
 			set, rank := whyred(bin, greens[:k], redPath)
-			record(names[3+i], set, rank)
+			record(names[5+i], set, rank)
 		}
 
 		// Control: a sixth passing run against the same baselines.
@@ -607,9 +632,11 @@ func eval(bin string, n int, outPath string) {
 			normalise(ctlPath, nc)
 			addClean(names[2], gnuDiff(filepath.Join(dir, "ng.log"), nc))
 		}
+		addClean(names[3], setDiff(greens[:1], ctlPath))
+		addClean(names[4], setDiff(greens[:3], ctlPath))
 		for i, k := range []int{1, 2, 3, 5} {
 			set, _ := whyred(bin, greens[:k], ctlPath)
-			addClean(names[3+i], set)
+			addClean(names[5+i], set)
 		}
 	}
 

@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 	"unicode/utf16"
 )
 
@@ -476,7 +477,7 @@ func TestCLI(t *testing.T) {
 	if code, _, _ := cli("--exit-code", g, red); code != 1 {
 		t.Fatalf("--exit-code with findings = %d", code)
 	}
-	if code, _, _ := cli("--exit-code", g, g); code != 0 {
+	if code, _, _ := cli("--exit-code", g, write(t, "same.log", green)); code != 0 {
 		t.Fatalf("--exit-code without findings = %d", code)
 	}
 	// Flags after positionals, format inferred from the extension.
@@ -641,4 +642,135 @@ func BenchmarkAnalyze(b *testing.B) {
 	for b.Loop() {
 		analyze(m, bytes.NewReader(data), nil, 2)
 	}
+}
+
+// ---- regressions from the independent review -------------------------------
+
+func TestReviewTimestampLevelPrefixIsNotFreeText(t *testing.T) {
+	common := "2026-11-09 10:00:01 INFO [main] Starting service\n2026-11-09 10:00:03 INFO [main] Ready\n"
+	p1 := common + "2026-11-09 10:00:02 INFO [main] Connected to replica alpha\n"
+	p2 := common + "2026-11-09 11:00:02 INFO [main] Using fallback mirror bravo\n"
+	red := common + "2026-11-09 12:00:02 INFO [main] Skipping migrations because schema lock is held by another process\n" +
+		"2026-11-09 12:00:02 INFO [main] Dropping table users\n"
+	if got := flagged(diff(t, red, p1, p2)); len(got) != 2 {
+		t.Fatalf("a date, a time, a level and a component must not free the rest of the line: %q", got)
+	}
+}
+
+func TestReviewWildcardLearningIsDeterministic(t *testing.T) {
+	// 17 templates sharing a prefix, spread over 6 runs so that the capped
+	// mask list would depend on iteration order if it were not sorted.
+	runs := make([]strings.Builder, 6)
+	for s := 0; s < 15; s++ {
+		for r := range 6 {
+			if r < 2 || s>>(r-2)&1 == 1 {
+				fmt.Fprintf(&runs[r], "alpha beta gamma delta tail%c\n", 'a'+s)
+			}
+		}
+	}
+	runs[0].WriteString("alpha beta gamma delta onlyone\n")
+	runs[1].WriteString("alpha beta gamma delta onlytwo\n")
+	var logs []string
+	for i := range runs {
+		logs = append(logs, runs[i].String())
+	}
+	first := fmt.Sprint(flagged(diff(t, "alpha beta gamma delta surprise\n", logs...)))
+	for range 40 {
+		if got := fmt.Sprint(flagged(diff(t, "alpha beta gamma delta surprise\n", logs...))); got != first {
+			t.Fatalf("non-deterministic: %s vs %s", got, first)
+		}
+	}
+}
+
+func TestReviewSilentMisses(t *testing.T) {
+	for name, c := range map[string][2]string{
+		"hex status code":   {"Process exited with code 0x00000000\n", "Process exited with code 0xC0000005\n"},
+		"operator":          {"check: actual == expected\n", "check: actual != expected\n"},
+		"id became a word":  {"Deployed revision 3fa9c21b7 to staging\n", "Deployed revision NONE to staging\n"},
+		"past token cap":    {strings.Repeat("w ", 600) + "fine\n", strings.Repeat("w ", 600) + "broken\n"},
+		"hidden by CR":      {"ready ok\n", "ERROR: disk full, build failed\rready ok\n"},
+		"unterminated OSC":  {"fatal: all good here\n", "fatal: \x1b]0;title crash and burn\n"},
+		"same-length is ok": {"Deployed revision 3fa9c21b7 to staging\n", "Deployed revision abcdefabc to staging\n"},
+	} {
+		got := flagged(diff(t, c[1], c[0]))
+		if name == "same-length is ok" {
+			if len(got) != 0 {
+				t.Errorf("%s: %q", name, got)
+			}
+		} else if len(got) != 1 {
+			t.Errorf("%s: want one flagged line, got %q", name, got)
+		}
+	}
+	// Progress bars are still collapsed to their final state.
+	want(t, diff(t, "fetch 10%\rfetch 55%\rfetch 100%\ndone\n", "fetch 100%\ndone\n"))
+}
+
+func TestReviewDayOfMonthIsNotAValue(t *testing.T) {
+	g := "Nov  9 10:00:01 host app: started\nNov  9 10:00:02 host app: ready\n"
+	want(t, diff(t, strings.ReplaceAll(g, "Nov  9", "Nov 10"), g, g))
+	want(t, diff(t, strings.ReplaceAll(g, "Nov  9", "Dec  1"), g))
+}
+
+func TestReviewLongLinesAreNotACPUCliff(t *testing.T) {
+	head := strings.Repeat("w ", 255)
+	red := strings.Repeat(head+strings.Repeat("z", 60000)+" error\n", 40)
+	start := time.Now()
+	diff(t, red, head+"xa\n", head+"xb\n")
+	if d := time.Since(start); d > 5*time.Second {
+		t.Fatalf("took %v", d)
+	}
+}
+
+func TestReviewHostileModel(t *testing.T) {
+	red := write(t, "red.log", "port 9\nx\n")
+	gz := func(s string) string {
+		var b bytes.Buffer
+		w := gzip.NewWriter(&b)
+		w.Write([]byte(s))
+		w.Close()
+		return write(t, "m", b.String())
+	}
+	// Escape sequences in a model must not reach the terminal, and a tracked
+	// slot without values must not break the report.
+	var sc scanner
+	h, _ := sc.scan([]byte("port 9"))
+	evil := fmt.Sprintf(`{"version":1,"runs":1,"templates":{"7":{"text":"gone \u001b[2J\u001b]0;pwned\u0007","runs":1,"max":1},"%d":{"text":"port 1","runs":1,"max":1,"slots":[{}]}}}`, h)
+	for _, f := range []string{"text", "md", "html", "json"} {
+		code, out, errs := cli("-f", f, "--model", gz(evil), red)
+		if code != 0 || strings.ContainsAny(out, "\x1b\x07") {
+			t.Fatalf("%s: code=%d err=%q raw control bytes=%v", f, code, errs, strings.ContainsAny(out, "\x1b\x07"))
+		}
+	}
+	// A model that decompresses to more than the cap is rejected, not loaded.
+	bomb := gz(`{"version":1,"runs":1,"templates":{"7":{"text":"` + strings.Repeat("A", maxModel+1) + `"}}}`)
+	if code, _, errs := cli("--model", bomb, red); code != 2 {
+		t.Fatalf("bomb: code=%d err=%q", code, errs)
+	}
+}
+
+func TestReviewBaselineGlobSkipsTheFailingLog(t *testing.T) {
+	dir := t.TempDir()
+	os.WriteFile(filepath.Join(dir, "passing.log"), []byte(green), 0o644)
+	red := filepath.Join(dir, "failing.log")
+	os.WriteFile(red, []byte(green+"panic: boom\n"), 0o644)
+	code, out, errs := cli(filepath.Join(dir, "*.log"), red)
+	if code != 0 || !strings.Contains(out, "panic: boom") || !strings.Contains(errs, "ignoring") {
+		t.Fatalf("code=%d out=%q err=%q", code, out, errs)
+	}
+	if code, _, _ := cli(red, red); code != 2 {
+		t.Fatal("a log compared with itself has no baseline")
+	}
+}
+
+func TestReviewUTF16LoneSurrogate(t *testing.T) {
+	units := append(utf16.Encode([]rune("a b")), 0xd83d)
+	units = append(units, utf16.Encode([]rune("\nFAIL x\n"))...)
+	raw := []byte{0xff, 0xfe}
+	for _, c := range units {
+		raw = append(raw, byte(c), byte(c>>8))
+	}
+	_, out, _ := cli("-f", "json", "-C", "0", write(t, "g.log", "hello\n"), write(t, "u.log", string(raw)))
+	var r Result
+	json.Unmarshal([]byte(out), &r)
+	want(t, &r, "new:a b�", "new:FAIL x")
 }

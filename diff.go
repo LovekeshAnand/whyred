@@ -68,6 +68,12 @@ type Result struct {
 
 var lexicon = regexp.MustCompile(`(?i)error|fail|fatal|panic|exception|traceback|denied|refused|timed out|timeout|cannot|can't|unable|undefined|not found|no such|killed|segmentation|segfault|abort|invalid|unexpected|exit code|exit status|assert|mismatch|out of memory|unresolved|rejected|crash`)
 
+// lexMatch reports whether b reads like a failure. Only the head of very long
+// lines is searched: the regexp is the slowest thing in the program.
+func lexMatch(b []byte) bool { return lexicon.Match(b[:min(len(b), lexCap)]) }
+
+const lexCap = 8 << 10
+
 type ringLine struct {
 	n int
 	b []byte
@@ -159,7 +165,7 @@ func (a *analyzer) classify(h uint64, b []byte, n int) bool {
 		}
 		if c == max(3*t.Max+1, t.Max+5) {
 			a.res.Spikes++
-			e := &Entry{Line: n, Text: clip(b), Kind: "spike", Score: 0.8, BaselineMax: int(t.Max), failure: lexicon.Match(b)}
+			e := &Entry{Line: n, Text: clip(b), Kind: "spike", Score: 0.8, BaselineMax: int(t.Max), failure: lexMatch(b)}
 			if a.entries < maxEntries {
 				a.spikes[h] = e
 				a.add(e)
@@ -172,15 +178,33 @@ func (a *analyzer) classify(h uint64, b []byte, n int) bool {
 	if len(toks) >= 3 && len(m.Wild) > 0 {
 		// A wildcard absorbs arbitrary tokens, but never one that reads like
 		// a failure: "PASS x" vs "FAIL x" must not be noise.
+		var spans [][]int // failure-word matches, found once and only if needed
+		searched := false
+		failureIn := func(from, to int) bool {
+			if !searched {
+				spans, searched = lexicon.FindAllIndex(b[:min(len(b), lexCap)], -1), true
+			}
+			for _, sp := range spans {
+				if sp[0] >= from && sp[0] < to {
+					return true
+				}
+			}
+			return false
+		}
 		var sum uint64
+		lits := 0
 		for i, tk := range toks {
-			if m.Wild[looKey(h, tk.h, i)] && !lexicon.Match(b[tk.s:tk.e]) {
+			k := looKey(h, tk.h, i)
+			if (m.Wild[k] || m.Wild[idKey(k, int(tk.e-tk.s))]) && !failureIn(int(tk.s), int(tk.e)) {
 				return false
 			}
-			if i >= minPrefix && m.Wild[prefixKey(sum, i)] && !lexicon.Match(b[tk.s:]) {
+			if lits >= minPrefix && m.Wild[prefixKey(sum, i)] && !failureIn(int(tk.s), len(b)) {
 				return false
 			}
 			sum += mix(tk.h, i)
+			if !tk.slot {
+				lits++
+			}
 		}
 	}
 	a.res.NewLines++
@@ -215,7 +239,7 @@ func (a *analyzer) emit(key uint64, n int, b []byte, kind string, score float64,
 		return false
 	}
 	s.entries++
-	e := &Entry{Line: n, Text: clip(b), Kind: kind, Score: score, Changes: ch, failure: lexicon.Match(b)}
+	e := &Entry{Line: n, Text: clip(b), Kind: kind, Score: score, Changes: ch, failure: lexMatch(b)}
 	if s.first == nil {
 		s.first = e
 	}

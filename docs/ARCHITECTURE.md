@@ -30,8 +30,8 @@ flowchart LR
 
 ## 1. From a line to a template
 
-A line is cleaned (ANSI escapes removed, only the text after the last `\r`
-kept) and split on whitespace and `,;()[]{}"'<>|=` and backtick. Each token is one of:
+A line is cleaned (ANSI escapes removed; only the text after the last `\r` kept,
+unless what that would hide reads like a failure) and split on whitespace and `,;()[]{}"'<>|=` and backtick. Each token is one of:
 
 - **Literal** — no digits. Its bytes are part of the template. `FAIL`, `src/a.ts`.
 - **Slot** — contains a digit. Only its *shape* is part of the template; the
@@ -48,6 +48,7 @@ Shapes are computed per alphanumeric segment:
 | `12 ms` (number followed by a unit word) | `#` | volatile |
 | `2026-11-10T12:00:01.123Z` | `<*>-<*>-<*>:<*>:<*>.<*>` | volatile, generated |
 | `9f86d081884c…`, UUIDs, `index-BkH3d9Qa.js` | `<*>`, `index-<*>.js` | volatile, generated |
+| `0xC0000005` | `0x#` | tracked value (status codes matter) |
 
 A segment is "generated" when it is hex of 7+ characters containing a digit, or
 letters and digits interleaved more than once over 5+ characters. Short mixed
@@ -103,9 +104,9 @@ Digits are not the only noise. Three rules, all conservative:
 
 | Rule | Learned when | Example |
 |---|---|---|
-| Generated-id position | a template has a generated token at position *i* | `tmp dir /tmp/up-a8Xk2Q` in a passing run makes `/tmp/up-QwErTy` (no digits, would be a literal) match |
+| Generated-id position | a template has a generated token at position *i* | `tmp dir /tmp/up-a8Xk2Q` in a passing run makes `/tmp/up-QwErTy` (no digits, would be a literal) match — but only a token of the same length, so `revision NONE` does not pass for `revision 3fa9c21b7` |
 | Token wildcard | two templates differ in exactly one token **and never occur in the same run** | `suite finished PASS today` / `… SKIP today` |
-| Prefix wildcard | templates share their first ≥4 tokens, never co-occur, **and together cover every run** | `HEAD is now at <sha> <a different commit message each run>` |
+| Prefix wildcard | templates occur once per run, share a prefix containing ≥4 *literal* tokens, never co-occur, **and together cover every run** | `HEAD is now at <sha> <a different commit message each run>` |
 
 Guards: lines shorter than 3 tokens are never generalised (`Killed` must not
 match `Done`), and a wildcard never absorbs text that matches the failure
@@ -179,8 +180,9 @@ else by score.
 - Any unreadable input, bad flag, bad regex or malformed model is a message on
   stderr and exit status 2; no partial report is written. A model file that
   fails to save is removed.
-- Lines longer than 64 KiB are truncated, never buffered whole. At most 256
-  tokens of a line are considered.
+- Lines longer than 64 KiB are truncated, never buffered whole. Past 512
+  tokens the rest of a line is folded into one literal token, so a change out
+  there is still a change. The failure lexicon looks at the first 8 KiB of a line.
 
 ## 8. Security
 
@@ -193,8 +195,11 @@ Logs are untrusted input: a pull request can print anything into them.
   the page inserts log text only through `textContent`. No external resources
   are loaded.
 - **Regex**: `--mask` uses Go's RE2 engine, which runs in linear time.
-- **Models**: decompression is capped, the version is checked, and slot counts
-  are bounds-checked on use.
+- **Models**: decompression is capped at 256 MiB, the version is checked, every
+  string a model can print is sanitised like log text, and slot counts are
+  bounds-checked on use.
+- **Self-hiding logs**: a carriage return cannot hide a failure-looking prefix,
+  and an unterminated OSC sequence does not swallow the rest of its line.
 - No network access, no subprocesses, no writes other than `-o`.
 
 ## 9. Known limits
@@ -207,4 +212,12 @@ Logs are untrusted input: a pull request can print anything into them.
   are not flagged.
 - With a single passing run, values that happen to be constant in it (a runner
   number, a PID) are reported as changed. A second passing run fixes that.
+- A number followed by a unit word is treated as a measurement, so
+  `leaked: 0 bytes` → `4096 bytes` is not reported.
+- Memory grows with the number of *distinct* line shapes in the passing logs
+  (roughly 400 bytes each); a baseline of millions of unique lines needs
+  gigabytes. There is no cap.
+- Wildcards are heuristics. They are guarded (token length, literal-token
+  count, failure lexicon), but a failing line that differs from a noisy passing
+  line only by an innocent-looking word at a learned wildcard position is absorbed.
 - The benchmark corpus is synthetic. See [BENCHMARKS.md](BENCHMARKS.md).

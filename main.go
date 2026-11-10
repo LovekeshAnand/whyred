@@ -22,8 +22,9 @@ const version = "0.1.0"
 const usage = `whyred - why is this run red?
 
 Shows the lines of a failing log that passing runs of the same job never print.
-Timestamps, durations, hashes, ports and reordered parallel output are ignored;
-with two or more passing runs, whatever they disagree on is learned as noise.
+Timestamps, durations, hashes and reordered parallel output are ignored. Give
+it two or more passing runs and whatever they disagree on (ports, PIDs, runner
+names, temp dirs, commit messages) is learned as noise.
 
 usage:
   whyred [flags] <passing.log>... <failing.log>
@@ -125,7 +126,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		if out == "" {
 			return fail("learn needs -o <model file>")
 		}
-		m, err := buildModel(pos, masks, maskSrc, stderr)
+		m, err := buildModel(pos, "", masks, maskSrc, stderr)
 		if err != nil {
 			return fail("%v", err)
 		}
@@ -162,7 +163,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	case len(pos) < 2:
 		return fail("need at least one passing log and one failing log (see whyred --help)")
 	default:
-		if m, err = buildModel(pos[:len(pos)-1], masks, maskSrc, stderr); err != nil {
+		if m, err = buildModel(pos[:len(pos)-1], failing, masks, maskSrc, stderr); err != nil {
 			return fail("%v", err)
 		}
 	}
@@ -278,17 +279,36 @@ func permute(fs *flag.FlagSet, args []string) []string {
 // buildModel learns every baseline in parallel (one goroutine per file,
 // bounded by GOMAXPROCS) and merges them in argument order, so the result
 // does not depend on scheduling.
-func buildModel(patterns []string, masks []*regexp.Regexp, maskSrc []string, stderr io.Writer) (*Model, error) {
+func buildModel(patterns []string, failing string, masks []*regexp.Regexp, maskSrc []string, stderr io.Writer) (*Model, error) {
 	var paths []string
+	same := func(a, b string) bool {
+		x, err1 := filepath.Abs(a)
+		y, err2 := filepath.Abs(b)
+		return err1 == nil && err2 == nil && x == y
+	}
+	add := func(p string) {
+		// A glob like *.log easily sweeps up the failing log, which would then
+		// teach the model that everything in it is normal.
+		if failing != "" && failing != "-" && same(p, failing) {
+			fmt.Fprintf(stderr, "whyred: warning: ignoring %s as a baseline: it is the failing log\n", p)
+			return
+		}
+		paths = append(paths, p)
+	}
 	for _, p := range patterns {
 		// PowerShell and cmd do not expand globs for us.
 		if _, err := os.Stat(p); err != nil && strings.ContainsAny(p, "*?[") {
 			if matches, _ := filepath.Glob(p); len(matches) > 0 {
-				paths = append(paths, matches...)
+				for _, match := range matches {
+					add(match)
+				}
 				continue
 			}
 		}
-		paths = append(paths, p)
+		add(p)
+	}
+	if len(paths) == 0 {
+		return nil, fmt.Errorf("no passing log left to compare against")
 	}
 	if len(paths) > maxBaselines {
 		return nil, fmt.Errorf("at most %d baseline logs, got %d", maxBaselines, len(paths))
@@ -397,10 +417,15 @@ func (u *utf16Reader) Read(p []byte) (int, error) {
 			if u.be {
 				c = rune(u.in[i])<<8 | rune(u.in[i+1])
 			}
-			switch {
-			case u.hi != 0:
-				c, u.hi = utf16.DecodeRune(u.hi, c), 0
-			case c >= 0xd800 && c < 0xdc00:
+			if u.hi != 0 {
+				if c >= 0xdc00 && c < 0xe000 {
+					c = utf16.DecodeRune(u.hi, c)
+				} else { // lone high surrogate: replace it, then handle c normally
+					u.out = utf8.AppendRune(u.out, utf8.RuneError)
+				}
+				u.hi = 0
+			}
+			if c >= 0xd800 && c < 0xdc00 {
 				u.hi = c
 				continue
 			}

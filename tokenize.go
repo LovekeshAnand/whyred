@@ -20,7 +20,8 @@ import (
 
 const (
 	maxLine   = 64 << 10 // longer lines are truncated
-	maxTokens = 256      // ponytail: tokens past this are ignored; raise if minified dumps matter
+	maxTokens = 512      // the rest of a longer line is folded into one final literal token
+	dateHash  = 0xda7e   // every month and weekday name hashes to this
 	fnvOffset = 14695981039346656037
 	fnvPrime  = 1099511628211
 	lenSalt   = 0x9E3779B97F4A7C15
@@ -45,8 +46,14 @@ type scanner struct {
 // prefixKey identifies "any line starting with these k tokens" (sum of their mixed hashes).
 func prefixKey(sum uint64, k int) uint64 { return mix(sum, k) ^ 0x3c3c3c3c3c3c3c3c }
 
-// minPrefix is the fewest leading tokens that may stand for a whole line.
+// minPrefix is how many literal (digit-free) tokens a prefix needs before it
+// may stand for a whole line. Timestamps and other slots do not count, or
+// "<date> <time> INFO [main]" would make every line of such a log free text.
 const minPrefix = 4
+
+// idKey narrows a leave-one-out key to tokens of one byte length: a position
+// that held a generated id accepts another id of the same length, not "NONE".
+func idKey(loo uint64, length int) uint64 { return loo ^ mix(uint64(length), 77) }
 
 var sepTab, trimTab, alnumTab, hexTab [256]bool
 
@@ -89,17 +96,28 @@ func looKey(lineHash, tokHash uint64, pos int) uint64 {
 }
 
 // cleanLine strips the line terminator, ANSI escape sequences and everything
-// before the last carriage return (progress bars redraw the same line).
+// before the last carriage return (progress bars redraw the same line) -
+// unless what the redraw would hide reads like a failure.
 // The result aliases b or the scanner's scratch buffer.
 func (sc *scanner) cleanLine(b []byte) []byte {
 	b = bytes.TrimRight(b, "\r\n")
 	if i := bytes.LastIndexByte(b, '\r'); i >= 0 {
-		b = b[i+1:]
+		if lexMatch(b[:i]) {
+			sc.clean = append(sc.clean[:0], b...)
+			b = sc.clean
+			for k, c := range b {
+				if c == '\r' {
+					b[k] = ' '
+				}
+			}
+		} else {
+			b = b[i+1:]
+		}
 	}
 	if bytes.IndexByte(b, 0x1b) < 0 {
 		return b
 	}
-	out := sc.clean[:0]
+	out := sc.clean[:0] // may alias b: safe, the write index never passes the read index
 	for i := 0; i < len(b); i++ {
 		c := b[i]
 		if c != 0x1b {
@@ -116,11 +134,15 @@ func (sc *scanner) cleanLine(b []byte) []byte {
 				i++
 			}
 		case ']': // OSC ... terminated by BEL or ESC \
-			i += 2
-			for i < len(b) && b[i] != 0x07 && b[i] != 0x1b {
-				i++
+			j := i + 2
+			for j < len(b) && b[j] != 0x07 && b[j] != 0x1b {
+				j++
 			}
-			if i+1 < len(b) && b[i] == 0x1b {
+			if j == len(b) { // unterminated: drop the introducer, keep the text
+				i++
+				break
+			}
+			if i = j; b[i] == 0x1b && i+1 < len(b) {
 				i++
 			}
 		default:
@@ -136,11 +158,15 @@ func (sc *scanner) cleanLine(b []byte) []byte {
 func (sc *scanner) scan(b []byte) (hash uint64, ok bool) {
 	toks := sc.toks[:0]
 	n := len(b)
-	for i := 0; i < n && len(toks) < maxTokens; {
+	for i := 0; i < n; {
 		for i < n && sepTab[b[i]] {
 			i++
 		}
 		s := i
+		if len(toks) == maxTokens && s < n { // fold the rest: a change out there is still a change
+			toks = append(toks, token{h: hashBytes(b[s:]), s: int32(s), e: int32(n)})
+			break
+		}
 		for i < n && !sepTab[b[i]] {
 			i++
 		}
@@ -149,7 +175,10 @@ func (sc *scanner) scan(b []byte) (hash uint64, ok bool) {
 			e--
 		}
 		if e == s {
-			continue
+			if bytes.IndexByte(b[s:i], '!') < 0 {
+				continue
+			}
+			e = i // "!" alone is what is left of "!=": keep it, "==" vs "!=" matters
 		}
 		t := b[s:e]
 		tk := token{s: int32(s), e: int32(e)}
@@ -167,7 +196,7 @@ func (sc *scanner) scan(b []byte) (hash uint64, ok bool) {
 			tk.rnd = tk.vol && !tk.num && bytes.Contains(sc.shape, []byte("<*>"))
 			h = hashBytes(sc.shape) ^ 0x5555
 		} else if isDateWord(t) {
-			h = 0xda7e
+			h = dateHash
 		}
 		tk.h = h
 		toks = append(toks, tk)
@@ -179,8 +208,13 @@ func (sc *scanner) scan(b []byte) (hash uint64, ok bool) {
 	var sum uint64
 	for i := range toks {
 		t := &toks[i]
-		if t.num && !t.vol && i+1 < len(toks) && !toks[i+1].slot && isUnit(b[toks[i+1].s:toks[i+1].e]) {
-			t.vol = true
+		if t.num && !t.vol {
+			// "12 ms" is a measurement; "Nov 10" is a date.
+			if i+1 < len(toks) && !toks[i+1].slot && (toks[i+1].h == dateHash || isUnit(b[toks[i+1].s:toks[i+1].e])) {
+				t.vol = true
+			} else if i > 0 && toks[i-1].h == dateHash {
+				t.vol = true
+			}
 		}
 		sum += mix(t.h, i)
 	}
@@ -237,6 +271,12 @@ func (sc *scanner) buildShape(t []byte, random bool) (found bool) {
 		}
 		seg := t[i:j]
 		nl := len(seg) - nd
+		if len(seg) > 2 && seg[0] == '0' && seg[1]|0x20 == 'x' && isHex(seg[2:]) {
+			// 0xC0000005 is a status code or an address, not an id: track it.
+			sh = append(sh, "0x#"...)
+			i = j
+			continue
+		}
 		switch {
 		case random && (nd > 0 || hex && len(seg) >= 4):
 			sh = append(sh, "<*>"...)
@@ -263,6 +303,15 @@ func (sc *scanner) buildShape(t []byte, random bool) (found bool) {
 	}
 	sc.shape = sh
 	return found
+}
+
+func isHex(b []byte) bool {
+	for _, c := range b {
+		if !hexTab[c] {
+			return false
+		}
+	}
+	return true
 }
 
 func isUnit(b []byte) bool {
